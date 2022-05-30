@@ -1,4 +1,5 @@
 import Canvas from '@/entities/Canvas'
+import { Config } from '@/models'
 
 export default class Battleship {
   private canvas: Canvas
@@ -40,11 +41,8 @@ export default class Battleship {
       ctx.stroke()
     }
   }
-}
 
-abstract class Config {
-  static size = 400
-  static cells = 10
-  static cellSize = Math.floor(Config.size / Config.cells)
-  static gridColor = '#3c813f'
+  private get rect(): DOMRect {
+    return this.canvas.domRect
+  }
 }

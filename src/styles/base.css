@@ -5,7 +5,7 @@ html, body {
 }
 
 canvas {
-  border: 2px solid #3c813f;
+  outline: 2px solid #3c813f;
 }
 
 #app {
@@ -15,15 +15,15 @@ canvas {
 
 #field {
   display: grid;
-  align-items: center;
-  grid-template-columns: 40px 1fr;
-  grid-template-rows: 40px 1fr;
+  grid-template-columns: 40px 400px;
+  grid-template-rows: 40px 400px;
+  padding: 10px;
+  width: 440px;
 }
 
 .axis-x {
   display: flex;
   grid-column: 2 / 3;
-  margin: 0 2px;
 }
 
 .axis-y {
