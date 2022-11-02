@@ -11,15 +11,16 @@ export default class Canvas {
     this.context = this.instance.getContext('2d')!
   }
 
-  public init({ parent, width, height }: CanvasConfig): void {
+  public init({ parentElement, id, width, height }: CanvasConfig): void {
     try {
-      const field = document.getElementById(parent)
+      const parent = document.getElementById(parentElement)
 
-      if (field) {
-        field.appendChild(this.instance)
+      if (parent) {
+        id && this.instance.setAttribute('id', `${parentElement}-${id}`)
+        parent.appendChild(this.instance)
         this.setSize(width, height)
       } else {
-        throw new Error(`Can't find the '${parent}' element`)
+        throw new Error(`Can't find the '${parentElement}' element`)
       }
     } catch (error) {
       console.error(error)

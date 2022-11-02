@@ -5,7 +5,7 @@ import './styles/base.css'
 function main() {
   const game = new Battleship()
 
-  game.draw()
+  game.run()
 }
 
 main()

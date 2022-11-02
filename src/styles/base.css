@@ -39,3 +39,9 @@ canvas {
   line-height: 40px;
   text-align: center;
 }
+
+#field-game {
+  position: absolute;
+  left: 50px;
+  top: 50px;
+}
