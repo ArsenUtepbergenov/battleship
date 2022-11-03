@@ -3,16 +3,21 @@ import { createShip, Ship } from '@/entities/Ship'
 import { Ships, Config } from '@/models'
 
 export default class Battleship {
-  private staticField: Canvas
+  private bgGrid: Canvas
   private field: Canvas
   private sCtx: CanvasRenderingContext2D | null = null
   private ctx: CanvasRenderingContext2D | null = null
-  private settingsShips = [{ number: 4, type: Ships.TorpedoBoat }]
+  private settingsShips = [
+    { amount: 4, type: Ships.TorpedoBoat },
+    { amount: 3, type: Ships.Destroyer },
+    { amount: 2, type: Ships.Cruiser },
+    { amount: 1, type: Ships.Battleship },
+  ]
   private ships: Ship[] = []
 
   constructor() {
-    this.staticField = new Canvas()
-    this.staticField.init({
+    this.bgGrid = new Canvas()
+    this.bgGrid.init({
       parentElement: 'field',
       id: 'grid',
       width: Config.size,
@@ -27,7 +32,7 @@ export default class Battleship {
       height: Config.size,
     })
 
-    this.sCtx = this.staticField.ctx
+    this.sCtx = this.bgGrid.ctx
     this.ctx = this.field.ctx
   }
 
@@ -43,23 +48,24 @@ export default class Battleship {
     const c = this.ctx
     if (!c) return
 
-    for (const ship of this.settingsShips) {
-      for (let s = 1; s <= ship.number; s++) {
-        const tempS = createShip(c, ship.type)
-        this.ships.push(tempS)
+    const dx = Config.shipSize + 10
+    const startX = Config.size + 20
+    const dy = Config.shipSize * 2
+
+    for (const [i, ship] of this.settingsShips.entries()) {
+      const { amount, type } = ship
+      const y = Config.shipSize + dy * i
+
+      for (let n = 0; n < amount; n++) {
+        const x = startX + n * (dx * (i + 1))
+
+        this.ships.push(createShip(c, { x, y, type }))
       }
     }
   }
 
   private drawShips(): void {
-    const h = 40
-    const step = 50
-    let i = 0
-
-    for (const s of this.ships) {
-      s.draw(Config.size + 40 + step * i, h)
-      i++
-    }
+    this.ships.forEach(s => s.draw())
   }
 
   private drawGrid(): void {
@@ -82,9 +88,5 @@ export default class Battleship {
       c.lineTo(Config.cellSize * Config.cells, y * Config.cellSize)
       c.stroke()
     }
-  }
-
-  private get rect(): DOMRect {
-    return this.staticField.domRect
   }
 }
