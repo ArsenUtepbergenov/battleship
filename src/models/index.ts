@@ -22,8 +22,27 @@ export enum Ships {
   Battleship = 4,
 }
 
+export interface IRect {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+export interface IPoint {
+  x: number
+  y: number
+}
+
 export type ShipParams = {
   x: number
   y: number
   type: Ships
 }
+
+export const TypeShips = [
+  { amount: 4, type: Ships.TorpedoBoat },
+  { amount: 3, type: Ships.Destroyer },
+  { amount: 2, type: Ships.Cruiser },
+  { amount: 1, type: Ships.Battleship },
+]

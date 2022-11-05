@@ -36,7 +36,7 @@ export default class Canvas {
     this.context.clearRect(0, 0, this.width, this.height)
   }
 
-  public get ctx(): CanvasRenderingContext2D | null {
+  public get ctx(): CanvasRenderingContext2D {
     return this.context
   }
 
