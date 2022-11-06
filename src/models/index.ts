@@ -38,6 +38,7 @@ export type ShipParams = {
   x: number
   y: number
   type: Ships
+  id?: string
 }
 
 export const TypeShips = [

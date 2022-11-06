@@ -27,13 +27,22 @@ export default class Canvas {
     }
   }
 
+  public setCursor(cursor: string = 'default'): void {
+    this.instance.style.cursor = cursor
+  }
+
   public setSize(width: number = 0, height: number = 0): void {
     this.width = this.instance.width = width
     this.height = this.instance.height = height
   }
 
-  public clear(): void {
-    this.context.clearRect(0, 0, this.width, this.height)
+  public clear(
+    x: number = 0,
+    y: number = 0,
+    w: number = this.width,
+    h: number = this.height,
+  ): void {
+    this.context.clearRect(x, y, w, h)
   }
 
   public get ctx(): CanvasRenderingContext2D {
