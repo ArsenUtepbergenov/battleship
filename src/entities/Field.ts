@@ -1,5 +1,5 @@
 import { Ship } from '@/entities/Ship'
-import { Config } from '@/models'
+import { Config, Orientation } from '@/models'
 import Utilities from '@/utils'
 import Canvas from './Canvas'
 import Point from './Point'
@@ -11,6 +11,7 @@ export default class Field {
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
   private offset = new Point()
+  private gridPositions: number[][]
 
   constructor() {
     this.field = new Canvas()
@@ -21,6 +22,7 @@ export default class Field {
       height: Config.size,
     })
 
+    this.gridPositions = Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
     this.c = this.field.ctx
 
     this.setHandlers()
@@ -74,18 +76,32 @@ export default class Field {
   private setMouseUp(): void {
     this.field.mouseUp = () => {
       if (this.currentShip) {
-        const { x, y, w, h } = this.currentShip
-        if (
-          Utilities.isRectInsideRect({ x, y, w, h }, { x: 0, y: 0, w: Config.size, h: Config.size })
-        ) {
-          console.log(this.currentShip)
-        } else {
-          this.moveToStartPosition(this.currentShip.id)
-        }
+        this.putShip(this.currentShip)
         this.currentShip = null
         this.field.setCursor('default')
       }
     }
+  }
+
+  private putShip(ship: Ship): void {
+    const cSize = Config.cellSize
+    const iX = Utilities.div(ship.x, cSize)
+    const iY = Utilities.div(ship.y, cSize)
+
+    if (this.gridPositions[iY][iX] !== 0) {
+      this.moveToStartPosition(ship.id)
+      return
+    }
+
+    for (let i = 0; i < ship.size; i++) {
+      let x = iX,
+        y = iY
+      ship.orientation === Orientation.H ? (x += i) : (y += i)
+      this.gridPositions[y][x] = 1
+    }
+
+    ship.setPosition(iX * cSize, iY * cSize)
+    this.redrawShips()
   }
 
   private moveToStartPosition(id: string): void {

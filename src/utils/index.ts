@@ -1,6 +1,18 @@
 import { IRect, IPoint } from '@/models'
 
 export default class Utilities {
+  public static div(numerator: number, denominator: number): number {
+    return (numerator - (numerator % denominator)) / denominator
+  }
+
+  public static createMatrix(width: number, height: number): number[][] {
+    const matrix: number[][] = []
+    while (height--) {
+      matrix.push(new Array(width).fill(0))
+    }
+    return matrix
+  }
+
   public static getMouseCoordinates(event: MouseEvent): { x: number; y: number } {
     const target = event.target as HTMLElement
     const rect = target.getBoundingClientRect()

@@ -1,4 +1,4 @@
-import { Config, IRect, ShipParams, Ships, TypeShips } from '@/models'
+import { Config, IRect, Orientation, ShipParams, Ships, TypeShips } from '@/models'
 
 export function createShips(ctx: CanvasRenderingContext2D): Ship[] {
   const ships: Ship[] = []
@@ -41,9 +41,10 @@ export class Ship implements IRect {
   public y: number = 0
   public w: number
   public h: number = Config.shipSize
+  public size: number = 1
+  public orientation: Orientation = Orientation.H
   private _id: string = ''
   private c: CanvasRenderingContext2D
-  private size: number = 1
 
   constructor(ctx: CanvasRenderingContext2D, { x = 0, y = 0, size = 1, id = '' }) {
     this.x = x

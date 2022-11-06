@@ -13,6 +13,7 @@ export abstract class Config {
   static shipColor = '#ff9800'
   static shipSize = Config.cellSize
   static shipsSpotSize = Config.shipSize * 8
+  static gridPositionsSize = Config.size / Config.cellSize
 }
 
 export enum Ships {
@@ -20,6 +21,11 @@ export enum Ships {
   Destroyer = 2,
   Cruiser = 3,
   Battleship = 4,
+}
+
+export enum Orientation {
+  H = 'horizontal',
+  V = 'vertical',
 }
 
 export interface IRect {
