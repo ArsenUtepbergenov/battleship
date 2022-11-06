@@ -76,7 +76,14 @@ export default class Field {
   private setMouseUp(): void {
     this.field.mouseUp = () => {
       if (this.currentShip) {
-        this.putShip(this.currentShip)
+        const { x, y, w, h } = this.currentShip
+        if (
+          Utilities.isRectInsideRect({ x, y, w, h }, { x: 0, y: 0, w: Config.size, h: Config.size })
+        ) {
+          this.putShip(this.currentShip)
+        } else {
+          this.moveToStartPosition(this.currentShip.id)
+        }
         this.currentShip = null
         this.field.setCursor('default')
       }
@@ -84,9 +91,9 @@ export default class Field {
   }
 
   private putShip(ship: Ship): void {
-    const cSize = Config.cellSize
-    const iX = Utilities.div(ship.x, cSize)
-    const iY = Utilities.div(ship.y, cSize)
+    const size = Config.cellSize
+    const iX = Utilities.div(ship.x, size)
+    const iY = Utilities.div(ship.y, size)
 
     if (this.gridPositions[iY][iX] !== 0) {
       this.moveToStartPosition(ship.id)
@@ -100,7 +107,7 @@ export default class Field {
       this.gridPositions[y][x] = 1
     }
 
-    ship.setPosition(iX * cSize, iY * cSize)
+    ship.setPosition(iX * size + 2, iY * size + 2)
     this.redrawShips()
   }
 

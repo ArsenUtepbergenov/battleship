@@ -1,18 +1,20 @@
-import { Config, IRect, Orientation, ShipParams, Ships, TypeShips } from '@/models'
+import { Config, IRect, Orientation, ShipParams, TypeShips } from '@/models'
 
 export function createShips(ctx: CanvasRenderingContext2D): Ship[] {
   const ships: Ship[] = []
+  const size = Config.shipSize
 
-  const dx = Config.shipSize + 10
-  const startX = Config.size + 20
-  const dy = Config.shipSize * 2
+  const startX = Config.size + size / 2
+
+  const offsetX = size + 12
+  const offsetY = 80
 
   for (const [i, ship] of TypeShips.entries()) {
     const { amount, type } = ship
-    const y = Config.shipSize + dy * i
+    const y = offsetY * i + size
 
     for (let n = 0; n < amount; n++) {
-      const x = startX + n * (dx * (i + 1))
+      const x = startX + n * (offsetX * (i + 1))
 
       ships.push(createShip(ctx, { x, y, type, id: `${i}${n}` }))
     }
@@ -22,26 +24,15 @@ export function createShips(ctx: CanvasRenderingContext2D): Ship[] {
 }
 
 export function createShip(ctx: CanvasRenderingContext2D, { x, y, type, id }: ShipParams): Ship {
-  switch (type) {
-    case Ships.TorpedoBoat:
-      return new Ship(ctx, { x, y, size: 1, id })
-    case Ships.Destroyer:
-      return new Ship(ctx, { x, y, size: 2, id })
-    case Ships.Cruiser:
-      return new Ship(ctx, { x, y, size: 3, id })
-    case Ships.Battleship:
-      return new Ship(ctx, { x, y, size: 4, id })
-    default:
-      return new Ship(ctx, { x: 0, y: 0, size: 1, id })
-  }
+  return new Ship(ctx, { x, y, size: type, id })
 }
 
 export class Ship implements IRect {
-  public x: number = 0
-  public y: number = 0
+  public x: number
+  public y: number
   public w: number
-  public h: number = Config.shipSize
-  public size: number = 1
+  public h: number
+  public size: number
   public orientation: Orientation = Orientation.H
   private _id: string = ''
   private c: CanvasRenderingContext2D
@@ -51,7 +42,8 @@ export class Ship implements IRect {
     this.y = y
     this.c = ctx
     this.size = size
-    this.w = Config.shipSize * this.size
+    this.w = Config.shipSize * this.size - 4
+    this.h = Config.shipSize - 4
     this._id = id
   }
 
@@ -63,6 +55,12 @@ export class Ship implements IRect {
     c.beginPath()
     c.rect(this.x, this.y, this.w, this.h)
     c.fill()
+  }
+
+  public changeOrientation(orientation: Orientation): void {
+    if (orientation === Orientation.H) this.orientation = Orientation.V
+    else if (orientation === Orientation.V) this.orientation = Orientation.H
+    ;[this.w, this.h] = [this.h, this.w]
   }
 
   public setPosition(x: number, y: number): void {

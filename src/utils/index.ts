@@ -56,10 +56,10 @@ export default class Utilities {
    */
   public static isRectInsideRect(iRect: IRect, eRect: IRect): boolean {
     if (
-      iRect.x > eRect.x &&
-      iRect.x + iRect.w < eRect.x + eRect.w &&
-      iRect.y > eRect.y &&
-      iRect.y + iRect.h < eRect.y + eRect.h
+      iRect.x >= eRect.x &&
+      iRect.x + iRect.w <= eRect.x + eRect.w &&
+      iRect.y >= eRect.y &&
+      iRect.y + iRect.h <= eRect.y + eRect.h
     ) {
       return true
     }
