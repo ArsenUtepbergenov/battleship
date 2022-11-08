@@ -18,6 +18,10 @@ export default class Battleship {
     this.putShipsToField()
   }
 
+  public rerun(): void {
+    this.field.clear()
+  }
+
   private putShipsToField(): void {
     this.field.putShips(this.ships)
   }

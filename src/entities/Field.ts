@@ -23,6 +23,15 @@ export default class Field {
     this.setHandlers()
   }
 
+  public clear(): void {
+    this.resetCurrentShip()
+    this.gridPositions = Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
+
+    this.activeShipsOnField.forEach(ship => this.moveToStartPosition(ship))
+
+    this.redrawShips()
+  }
+
   public get ctx(): CanvasRenderingContext2D {
     return this.c
   }
@@ -204,18 +213,12 @@ export default class Field {
       if (!currentShipStartPosition) return
 
       const { x, y } = currentShipStartPosition
+
+      if (ship.orientation === Orientation.V) ship.changeOrientation()
+
       ship.setPosition(x, y)
       this.redrawShips()
     }
-  }
-
-  private clear(): void {
-    this.resetCurrentShip()
-    this.gridPositions = Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
-
-    this.activeShipsOnField.forEach(ship => this.moveToStartPosition(ship))
-
-    this.redrawShips()
   }
 
   private resetCurrentShip(): void {

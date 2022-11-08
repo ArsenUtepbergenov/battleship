@@ -5,6 +5,14 @@ export type CanvasConfig = {
   height: number
 }
 
+export type ButtonConfig = {
+  parentElement: string
+  id?: string
+  width?: number
+  height?: number
+  text?: string
+}
+
 export abstract class Config {
   static size = 400
   static cells = 10

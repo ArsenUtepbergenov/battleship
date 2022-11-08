@@ -45,3 +45,24 @@ canvas {
   left: 50px;
   top: 50px;
 }
+
+#controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+button {
+  border: 0;
+  padding: 10px 22px;
+  text-transform: capitalize;
+  font-size: 1em;
+  background-color: #8bc34a;
+  color: white;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #7bae37;
+}
