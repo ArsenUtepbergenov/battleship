@@ -1,5 +1,5 @@
 import { Ship } from '@/entities/Ship'
-import { Config, Orientation } from '@/models'
+import { Config, Directions, FieldParams, IPoint, Orientation } from '@/models'
 import Utilities from '@/utils'
 import Canvas from './Canvas'
 import Point from './Point'
@@ -12,15 +12,10 @@ export default class Field {
   private currentShip: Ship | null = null
   private offset = new Point()
   private gridPositions: number[][]
+  private activeShipsOnField: Ship[] = []
 
   constructor() {
-    this.field = new Canvas()
-    this.field.init({
-      parentElement: 'field',
-      id: 'game',
-      width: Config.size + Config.shipsSpotSize,
-      height: Config.size,
-    })
+    this.field = new Canvas(FieldParams)
 
     this.gridPositions = Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
     this.c = this.field.ctx
@@ -38,88 +33,194 @@ export default class Field {
   }
 
   private setHandlers(): void {
-    this.setMouseDown()
-    this.setMouseUp()
-    this.setMouseMove()
+    this.setMouseMoveHandler()
+    this.setMouseOutHandler()
+    this.setClickHandler()
+    this.setContextMenuHandler()
   }
 
-  private setMouseDown(): void {
-    this.field.mouseDown = event => {
-      const mousePosition = Utilities.getMouseCoordinates(event)
-
-      for (const ship of this.ships) {
-        if (Utilities.checkCollisionPointToRect(mousePosition, ship)) {
-          this.currentShip = ship
-          const { x, y } = this.currentShip
-
-          if (!this.shipsStartPositions.has(this.currentShip.id)) {
-            this.shipsStartPositions.set(this.currentShip.id, new Point(x, y))
-          }
-          this.offset.setPosition(event.clientX - x, event.clientY - y)
-        }
-      }
-    }
+  private removeDefaultAction(event: MouseEvent): void {
+    event.preventDefault()
+    event.stopPropagation()
   }
 
-  private setMouseMove(): void {
+  private setMouseMoveHandler(): void {
     this.field.mouseMove = event => {
-      if (this.currentShip) {
-        const x = event.clientX - this.offset.x
-        const y = event.clientY - this.offset.y
-        this.currentShip.setPosition(x, y)
-        this.field.setCursor('grab')
-        this.redrawShips()
+      if (!this.currentShip) return
+
+      const x = event.clientX - this.offset.x
+      const y = event.clientY - this.offset.y
+      this.currentShip.setPosition(x, y)
+      this.field.setCursor('grab')
+      this.redrawShips()
+    }
+  }
+
+  private setMouseOutHandler(): void {
+    this.field.mouseOut = () => {
+      if (!this.currentShip) return
+
+      this.moveToStartPosition(this.currentShip)
+      this.resetCurrentShip()
+    }
+  }
+
+  public setClickHandler(): void {
+    this.field.click = event => {
+      this.removeDefaultAction(event)
+
+      const position = Utilities.getMouseCoordinates(event)
+      const client = new Point(event.clientX, event.clientY)
+
+      !this.currentShip ? this.setCurrentShip(position, client) : this.putCurrentShip()
+    }
+  }
+
+  private setContextMenuHandler(): void {
+    this.field.contextMenu = event => {
+      this.removeDefaultAction(event)
+      if (!this.currentShip) return
+
+      this.currentShip.changeOrientation()
+      this.redrawShips()
+    }
+  }
+
+  private setCurrentShip(position: IPoint, client: IPoint): void {
+    for (const ship of this.ships) {
+      if (Utilities.checkCollisionPointToRect(position, ship)) {
+        this.currentShip = ship
+        const { x, y } = this.currentShip
+
+        if (!this.shipsStartPositions.has(this.currentShip.id))
+          this.shipsStartPositions.set(this.currentShip.id, new Point(x, y))
+
+        this.offset.setPosition(client.x - x, client.y - y)
       }
     }
   }
 
-  private setMouseUp(): void {
-    this.field.mouseUp = () => {
-      if (this.currentShip) {
-        const { x, y, w, h } = this.currentShip
-        if (
-          Utilities.isRectInsideRect({ x, y, w, h }, { x: 0, y: 0, w: Config.size, h: Config.size })
-        ) {
-          this.putShip(this.currentShip)
-        } else {
-          this.moveToStartPosition(this.currentShip.id)
-        }
-        this.currentShip = null
-        this.field.setCursor('default')
-      }
+  private putCurrentShip(): void {
+    if (!this.currentShip) return
+
+    const field = { x: 0, y: 0, w: Config.size, h: Config.size }
+
+    if (Utilities.isRectInsideRect(this.currentShip, field)) {
+      this.putShip(this.currentShip)
     }
+
+    return
+  }
+
+  private checkX(grid: number[][], s: number, e: number, a: number): boolean {
+    while (s < e) {
+      if (grid[a][s] !== 0) return false
+      s++
+    }
+
+    return true
+  }
+
+  private checkY(grid: number[][], s: number, e: number, a: number): boolean {
+    while (s < e) {
+      if (grid[s][a] !== 0) return false
+      s++
+    }
+
+    return true
+  }
+
+  private occupyShip(ship: Ship, iX: number, iY: number): boolean {
+    const isH = ship.orientation === Orientation.H
+
+    if (isH) {
+      if (!this.checkX(this.gridPositions, iX, iX + ship.size, iY)) return false
+    } else {
+      if (!this.checkY(this.gridPositions, iY, iY + ship.size, iX)) return false
+    }
+
+    for (let i = 0; i < ship.size; i++) {
+      let x = iX,
+        y = iY
+      isH ? (x += i) : (y += i)
+      this.gridPositions[y][x] = 1
+    }
+
+    return true
   }
 
   private putShip(ship: Ship): void {
     const size = Config.cellSize
     const iX = Utilities.div(ship.x, size)
     const iY = Utilities.div(ship.y, size)
+    const isH = ship.orientation === Orientation.H
 
-    if (this.gridPositions[iY][iX] !== 0) {
-      this.moveToStartPosition(ship.id)
-      return
-    }
+    if (!this.occupyShip(ship, iX, iY)) return
 
     for (let i = 0; i < ship.size; i++) {
       let x = iX,
         y = iY
-      ship.orientation === Orientation.H ? (x += i) : (y += i)
-      this.gridPositions[y][x] = 1
+      isH ? (x += i) : (y += i)
+
+      if (!this.occupyAroundShip(y, x)) return
     }
 
-    ship.setPosition(iX * size + 2, iY * size + 2)
+    this.setPositionOfShip(ship, iX * size + 2, iY * size + 2)
+
+    this.activeShipsOnField.push(ship)
+  }
+
+  private occupyAroundShip(y: number, x: number): boolean {
+    try {
+      for (const d of Directions) {
+        const dx = x + d.c
+        const dy = y + d.r
+        const grid = this.gridPositions
+        const boundX = dx > grid.length - 1 || dx < 0
+        const boundY = dy > grid.length - 1 || dy < 0
+
+        if (boundX || boundY) continue
+        if (grid[dy][dx] === 1) continue
+        if (grid[dy][dx] === 0) this.gridPositions[dy][dx] = -1
+      }
+
+      return true
+    } catch (error) {
+      console.error(error)
+      return false
+    }
+  }
+
+  private setPositionOfShip(ship: Ship, x: number, y: number): void {
+    ship.setPosition(x, y)
+    this.redrawShips()
+    this.resetCurrentShip()
+  }
+
+  private moveToStartPosition(ship: Ship): void {
+    if (ship?.id) {
+      const currentShipStartPosition = this.shipsStartPositions.get(ship.id)
+
+      if (!currentShipStartPosition) return
+
+      const { x, y } = currentShipStartPosition
+      ship.setPosition(x, y)
+      this.redrawShips()
+    }
+  }
+
+  private clear(): void {
+    this.resetCurrentShip()
+    this.gridPositions = Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
+
+    this.activeShipsOnField.forEach(ship => this.moveToStartPosition(ship))
+
     this.redrawShips()
   }
 
-  private moveToStartPosition(id: string): void {
-    if (this.currentShip && id) {
-      const aShip = this.shipsStartPositions.get(id)
-      if (aShip) {
-        const { x, y } = aShip
-        this.currentShip.setPosition(x, y)
-        this.redrawShips()
-      }
-    }
+  private resetCurrentShip(): void {
+    this.currentShip = null
+    this.field.setCursor('default')
   }
 
   private redrawShips(): void {

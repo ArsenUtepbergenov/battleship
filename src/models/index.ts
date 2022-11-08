@@ -16,6 +16,8 @@ export abstract class Config {
   static gridPositionsSize = Config.size / Config.cellSize
 }
 
+export type EventHandlerParams = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
+
 export enum Ships {
   TorpedoBoat = 1,
   Destroyer = 2,
@@ -52,4 +54,32 @@ export const TypeShips = [
   { amount: 3, type: Ships.Destroyer },
   { amount: 2, type: Ships.Cruiser },
   { amount: 1, type: Ships.Battleship },
+]
+
+export const BgCanvasParams = {
+  parentElement: 'field',
+  id: 'grid',
+  width: Config.size,
+  height: Config.size,
+}
+
+export const FieldParams = {
+  parentElement: 'field',
+  id: 'game',
+  width: Config.size + Config.shipsSpotSize,
+  height: Config.size,
+}
+
+/**
+ * The directions around a specific cell, where r - a row, c - a column
+ */
+export const Directions = [
+  { r: -1, c: 0 },
+  { r: 1, c: 0 },
+  { r: 0, c: -1 },
+  { r: 0, c: 1 },
+  { r: 1, c: 1 },
+  { r: -1, c: 1 },
+  { r: 1, c: -1 },
+  { r: -1, c: -1 },
 ]

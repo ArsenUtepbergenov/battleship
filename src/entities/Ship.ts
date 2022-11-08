@@ -57,9 +57,9 @@ export class Ship implements IRect {
     c.fill()
   }
 
-  public changeOrientation(orientation: Orientation): void {
-    if (orientation === Orientation.H) this.orientation = Orientation.V
-    else if (orientation === Orientation.V) this.orientation = Orientation.H
+  public changeOrientation(): void {
+    if (this.orientation === Orientation.H) this.orientation = Orientation.V
+    else if (this.orientation === Orientation.V) this.orientation = Orientation.H
     ;[this.w, this.h] = [this.h, this.w]
   }
 

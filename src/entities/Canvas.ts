@@ -1,4 +1,4 @@
-import { CanvasConfig } from '@/models'
+import { CanvasConfig, EventHandlerParams } from '@/models'
 
 export default class Canvas {
   private width = 0
@@ -6,12 +6,14 @@ export default class Canvas {
   private context: CanvasRenderingContext2D
   private instance: HTMLCanvasElement
 
-  constructor() {
+  constructor({ parentElement, id, width, height }: CanvasConfig) {
     this.instance = document.createElement('canvas')
     this.context = this.instance.getContext('2d')!
+
+    this.init({ parentElement, id, width, height })
   }
 
-  public init({ parentElement, id, width, height }: CanvasConfig): void {
+  private init({ parentElement, id, width, height }: CanvasConfig): void {
     try {
       const parent = document.getElementById(parentElement)
 
@@ -53,19 +55,27 @@ export default class Canvas {
     return this.instance.getBoundingClientRect()
   }
 
-  public set mouseDown(fn: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null) {
+  public set mouseDown(fn: EventHandlerParams) {
     this.instance.onmousedown = fn
   }
 
-  public set mouseMove(fn: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null) {
+  public set mouseMove(fn: EventHandlerParams) {
     this.instance.onmousemove = fn
   }
 
-  public set mouseUp(fn: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null) {
+  public set mouseUp(fn: EventHandlerParams) {
     this.instance.onmouseup = fn
   }
 
-  public set mouseOut(fn: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null) {
+  public set mouseOut(fn: EventHandlerParams) {
     this.instance.onmouseout = fn
+  }
+
+  public set click(fn: EventHandlerParams) {
+    this.instance.onclick = fn
+  }
+
+  public set contextMenu(fn: EventHandlerParams) {
+    this.instance.oncontextmenu = fn
   }
 }
