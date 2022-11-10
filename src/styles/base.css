@@ -68,11 +68,11 @@ button {
   text-transform: capitalize;
 }
 
-#controls-restart-button {
+#controls-reset-all-button {
   background-color: darkslateblue;
 }
 
-#controls-restart-button:hover {
+#controls-reset-all-button:hover {
   background-color: #291f6c;
 }
 

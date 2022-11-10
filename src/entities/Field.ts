@@ -37,7 +37,46 @@ export default class Field {
   }
 
   public undo(): void {
-    console.log('undo')
+    if (this.shipsOnField.length) {
+      const lastShip = this.shipsOnField.pop()
+
+      if (lastShip) {
+        this.resetCurrentShip()
+        this.removeShipFromField(lastShip)
+        this.moveToStartPosition(lastShip)
+        this.shipsStartPositions.delete(lastShip.id)
+        this.offset = new Point()
+      }
+    }
+  }
+
+  private removeShipFromField(ship: Ship): void {
+    const iX = Utilities.div(ship.x, Config.cellSize)
+    const iY = Utilities.div(ship.y, Config.cellSize)
+    const isH = ship.orientation === Orientation.H
+
+    for (let i = 0; i < ship.size; i++) {
+      let x = iX,
+        y = iY
+      isH ? (x += i) : (y += i)
+
+      this.gridPositions[y][x] = 0
+      if (!this.occupyAroundShip(y, x, -1, 0)) return
+    }
+
+    this.shipsOnField.forEach(ship => {
+      const iX = Utilities.div(ship.x, Config.cellSize)
+      const iY = Utilities.div(ship.y, Config.cellSize)
+      const isH = ship.orientation === Orientation.H
+
+      for (let i = 0; i < ship.size; i++) {
+        let x = iX,
+          y = iY
+        isH ? (x += i) : (y += i)
+
+        if (!this.occupyAroundShip(y, x)) return
+      }
+    })
   }
 
   private setHandlers(): void {
@@ -192,11 +231,10 @@ export default class Field {
     }
 
     this.setPositionOfShip(ship, iX * size + 2, iY * size + 2)
-
     this.shipsOnField.push(ship)
   }
 
-  private occupyAroundShip(y: number, x: number): boolean {
+  private occupyAroundShip(y: number, x: number, from: number = 0, to: number = -1): boolean {
     try {
       for (const { c, r } of Directions) {
         const dx = x + c
@@ -206,8 +244,7 @@ export default class Field {
         const boundY = dy > grid.length - 1 || dy < 0
 
         if (boundX || boundY) continue
-        if (grid[dy][dx] === 1) continue
-        if (grid[dy][dx] === 0) this.gridPositions[dy][dx] = -1
+        if (grid[dy][dx] === from) this.gridPositions[dy][dx] = to
       }
 
       return true
