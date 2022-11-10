@@ -13,7 +13,7 @@ export default class Utilities {
     return matrix
   }
 
-  public static getMouseCoordinates(event: MouseEvent): { x: number; y: number } {
+  public static getMouseCoordinates(event: MouseEvent): IPoint {
     const target = event.target as HTMLElement
     const rect = target.getBoundingClientRect()
 
@@ -65,5 +65,10 @@ export default class Utilities {
     }
 
     return false
+  }
+
+  public static removeDefaultAction(event: MouseEvent): void {
+    event.preventDefault()
+    event.stopPropagation()
   }
 }

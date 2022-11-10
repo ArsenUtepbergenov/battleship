@@ -5,31 +5,30 @@ import Canvas from './Canvas'
 import Point from './Point'
 
 // default constants
-const defaultGridField = Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
+const getDefaultGrid = () =>
+  Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
 
 export default class Field {
-  private instance: Canvas
+  private instance: Canvas = new Canvas(FieldParams)
   private ships: Ship[] = []
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
   private offset = new Point()
-  private gridPositions: number[][]
-  private activeShipsOnField: Ship[] = []
+  private gridPositions: number[][] = getDefaultGrid()
+  private shipsOnField: Ship[] = []
 
   constructor() {
-    this.instance = new Canvas(FieldParams)
-    this.gridPositions = defaultGridField
     this.setHandlers()
   }
 
   public clear(): void {
     this.resetCurrentShip()
-    this.gridPositions = defaultGridField
-
-    this.activeShipsOnField.forEach(ship => this.moveToStartPosition(ship))
-
+    this.gridPositions = getDefaultGrid()
+    this.shipsOnField.forEach(ship => this.moveToStartPosition(ship))
+    this.shipsOnField = []
+    this.shipsStartPositions.clear()
+    this.offset = new Point()
     this.redrawShips()
-    this.unsetHandlers()
   }
 
   public putShips(ships: Ship[]): void {
@@ -51,13 +50,25 @@ export default class Field {
     this.instance.contextMenu = null
   }
 
-  private removeDefaultAction(event: MouseEvent): void {
-    event.preventDefault()
-    event.stopPropagation()
+  private isOnField(ship: Ship): boolean {
+    return this.shipsOnField.find(s => s.id === ship.id) ? true : false
+  }
+
+  private showPointerCursorOverShip(position: IPoint): void {
+    for (const ship of this.ships) {
+      if (Utilities.checkCollisionPointToRect(position, ship) && !this.isOnField(ship)) {
+        this.instance.setCursor('pointer')
+        break
+      } else {
+        this.instance.setCursor()
+      }
+    }
   }
 
   private setMouseMove(): void {
     this.instance.mouseMove = event => {
+      this.showPointerCursorOverShip(Utilities.getMouseCoordinates(event))
+
       if (!this.currentShip) return
 
       const x = event.clientX - this.offset.x
@@ -79,7 +90,7 @@ export default class Field {
 
   public setClick(): void {
     this.instance.click = event => {
-      this.removeDefaultAction(event)
+      Utilities.removeDefaultAction(event)
 
       const position = Utilities.getMouseCoordinates(event)
       const client = new Point(event.clientX, event.clientY)
@@ -90,7 +101,7 @@ export default class Field {
 
   private setContextMenu(): void {
     this.instance.contextMenu = event => {
-      this.removeDefaultAction(event)
+      Utilities.removeDefaultAction(event)
       if (!this.currentShip) return
 
       this.currentShip.changeOrientation()
@@ -101,8 +112,9 @@ export default class Field {
   private setCurrentShip(position: IPoint, client: IPoint): void {
     for (const ship of this.ships) {
       if (Utilities.checkCollisionPointToRect(position, ship)) {
-        this.currentShip = ship
-        const { x, y } = this.currentShip
+        if (this.isOnField(ship)) return
+
+        const { x, y } = (this.currentShip = ship)
 
         if (!this.shipsStartPositions.has(this.currentShip.id))
           this.shipsStartPositions.set(this.currentShip.id, new Point(x, y))
@@ -120,23 +132,21 @@ export default class Field {
     if (Utilities.isRectInsideRect(this.currentShip, sizeField)) {
       this.putShip(this.currentShip)
     }
-
-    return
   }
 
-  private checkX(grid: number[][], s: number, e: number, a: number): boolean {
-    while (s < e) {
-      if (grid[a][s] !== 0) return false
-      s++
+  private checkIntervalX(start: number, end: number, axis: number): boolean {
+    while (start < end) {
+      if (this.gridPositions[axis][start] !== 0) return false
+      start++
     }
 
     return true
   }
 
-  private checkY(grid: number[][], s: number, e: number, a: number): boolean {
-    while (s < e) {
-      if (grid[s][a] !== 0) return false
-      s++
+  private checkIntervalY(start: number, end: number, axis: number): boolean {
+    while (start < end) {
+      if (this.gridPositions[start][axis] !== 0) return false
+      start++
     }
 
     return true
@@ -146,9 +156,9 @@ export default class Field {
     const isH = ship.orientation === Orientation.H
 
     if (isH) {
-      if (!this.checkX(this.gridPositions, iX, iX + ship.size, iY)) return false
+      if (!this.checkIntervalX(iX, iX + ship.size, iY)) return false
     } else {
-      if (!this.checkY(this.gridPositions, iY, iY + ship.size, iX)) return false
+      if (!this.checkIntervalY(iY, iY + ship.size, iX)) return false
     }
 
     for (let i = 0; i < ship.size; i++) {
@@ -179,7 +189,7 @@ export default class Field {
 
     this.setPositionOfShip(ship, iX * size + 2, iY * size + 2)
 
-    this.activeShipsOnField.push(ship)
+    this.shipsOnField.push(ship)
   }
 
   private occupyAroundShip(y: number, x: number): boolean {
@@ -226,7 +236,7 @@ export default class Field {
 
   private resetCurrentShip(): void {
     this.currentShip = null
-    this.instance.setCursor('default')
+    this.instance.setCursor()
   }
 
   private redrawShips(): void {
