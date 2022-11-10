@@ -3,13 +3,13 @@ import { ButtonConfig, EventHandlerParams } from '@/models'
 export default class Button {
   private instance: HTMLButtonElement
 
-  constructor({ parentElement, id, width, height, text }: ButtonConfig) {
+  constructor({ parentElement, id, text }: ButtonConfig) {
     this.instance = document.createElement('button')
 
-    this.init({ parentElement, id, width, height, text })
+    this.init({ parentElement, id, text })
   }
 
-  private init({ parentElement, id, width, height, text = '' }: ButtonConfig): void {
+  private init({ parentElement, id, text = '' }: ButtonConfig): void {
     try {
       const parent = document.getElementById(parentElement)
 

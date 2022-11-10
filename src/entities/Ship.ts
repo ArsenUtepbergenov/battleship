@@ -1,6 +1,6 @@
 import { Config, IRect, Orientation, ShipParams, TypeShips } from '@/models'
 
-export function createShips(ctx: CanvasRenderingContext2D): Ship[] {
+export function createShips(): Ship[] {
   const ships: Ship[] = []
   const size = Config.shipSize
 
@@ -16,15 +16,15 @@ export function createShips(ctx: CanvasRenderingContext2D): Ship[] {
     for (let n = 0; n < amount; n++) {
       const x = startX + n * (offsetX * (i + 1))
 
-      ships.push(createShip(ctx, { x, y, type, id: `${i}${n}` }))
+      ships.push(createShip({ x, y, type, id: `${i}${n}` }))
     }
   }
 
   return ships
 }
 
-export function createShip(ctx: CanvasRenderingContext2D, { x, y, type, id }: ShipParams): Ship {
-  return new Ship(ctx, { x, y, size: type, id })
+export function createShip({ x, y, type, id }: ShipParams): Ship {
+  return new Ship({ x, y, size: type, id })
 }
 
 export class Ship implements IRect {
@@ -35,26 +35,21 @@ export class Ship implements IRect {
   public size: number
   public orientation: Orientation = Orientation.H
   private _id: string = ''
-  private c: CanvasRenderingContext2D
 
-  constructor(ctx: CanvasRenderingContext2D, { x = 0, y = 0, size = 1, id = '' }) {
+  constructor({ x = 0, y = 0, size = 1, id = '' }) {
     this.x = x
     this.y = y
-    this.c = ctx
     this.size = size
     this.w = Config.shipSize * this.size - 4
     this.h = Config.shipSize - 4
     this._id = id
   }
 
-  public draw(): void {
-    const c = this.c
-    if (!c) return
-
-    c.fillStyle = Config.shipColor
-    c.beginPath()
-    c.rect(this.x, this.y, this.w, this.h)
-    c.fill()
+  public draw(ctx: CanvasRenderingContext2D): void {
+    ctx.fillStyle = Config.shipColor
+    ctx.beginPath()
+    ctx.rect(this.x, this.y, this.w, this.h)
+    ctx.fill()
   }
 
   public changeOrientation(): void {

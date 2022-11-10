@@ -1,3 +1,4 @@
+import { IRect } from './../models/index'
 import { CanvasConfig, EventHandlerParams } from '@/models'
 
 export default class Canvas {
@@ -38,13 +39,8 @@ export default class Canvas {
     this.height = this.instance.height = height
   }
 
-  public clear(
-    x: number = 0,
-    y: number = 0,
-    w: number = this.width,
-    h: number = this.height,
-  ): void {
-    this.context.clearRect(x, y, w, h)
+  public clear(rect: IRect = { x: 0, y: 0, w: this.width, h: this.height }): void {
+    this.context.clearRect(rect.x, rect.y, rect.w, rect.h)
   }
 
   public get ctx(): CanvasRenderingContext2D {

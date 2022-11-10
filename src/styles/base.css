@@ -11,14 +11,16 @@ canvas {
 #app {
   font-family: monospace;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
 }
 
 #field {
   display: grid;
   grid-template-columns: 40px 400px;
   grid-template-rows: 40px 400px;
-  padding: 10px;
-  width: 440px;
+  width: 760px;
 }
 
 .axis-x {
@@ -42,8 +44,8 @@ canvas {
 
 #field-game {
   position: absolute;
-  left: 50px;
-  top: 50px;
+  left: 40px;
+  top: 40px;
 }
 
 #controls {
@@ -58,6 +60,7 @@ button {
   text-transform: capitalize;
   font-size: 1em;
   background-color: #8bc34a;
+  border-radius: 3px;
   color: white;
   letter-spacing: 1px;
   cursor: pointer;

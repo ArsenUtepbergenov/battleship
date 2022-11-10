@@ -27,6 +27,6 @@ export default class Battleship {
   }
 
   private createShips(): void {
-    this.ships = createShips(this.field.ctx)
+    this.ships = createShips()
   }
 }

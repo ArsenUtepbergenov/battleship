@@ -4,9 +4,11 @@ import Utilities from '@/utils'
 import Canvas from './Canvas'
 import Point from './Point'
 
+// default constants
+const defaultGridField = Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
+
 export default class Field {
-  private field: Canvas
-  private c: CanvasRenderingContext2D
+  private instance: Canvas
   private ships: Ship[] = []
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
@@ -15,25 +17,19 @@ export default class Field {
   private activeShipsOnField: Ship[] = []
 
   constructor() {
-    this.field = new Canvas(FieldParams)
-
-    this.gridPositions = Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
-    this.c = this.field.ctx
-
+    this.instance = new Canvas(FieldParams)
+    this.gridPositions = defaultGridField
     this.setHandlers()
   }
 
   public clear(): void {
     this.resetCurrentShip()
-    this.gridPositions = Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
+    this.gridPositions = defaultGridField
 
     this.activeShipsOnField.forEach(ship => this.moveToStartPosition(ship))
 
     this.redrawShips()
-  }
-
-  public get ctx(): CanvasRenderingContext2D {
-    return this.c
+    this.unsetHandlers()
   }
 
   public putShips(ships: Ship[]): void {
@@ -42,10 +38,17 @@ export default class Field {
   }
 
   private setHandlers(): void {
-    this.setMouseMoveHandler()
-    this.setMouseOutHandler()
-    this.setClickHandler()
-    this.setContextMenuHandler()
+    this.setMouseMove()
+    this.setMouseOut()
+    this.setClick()
+    this.setContextMenu()
+  }
+
+  private unsetHandlers(): void {
+    this.instance.mouseMove = null
+    this.instance.mouseOut = null
+    this.instance.click = null
+    this.instance.contextMenu = null
   }
 
   private removeDefaultAction(event: MouseEvent): void {
@@ -53,20 +56,20 @@ export default class Field {
     event.stopPropagation()
   }
 
-  private setMouseMoveHandler(): void {
-    this.field.mouseMove = event => {
+  private setMouseMove(): void {
+    this.instance.mouseMove = event => {
       if (!this.currentShip) return
 
       const x = event.clientX - this.offset.x
       const y = event.clientY - this.offset.y
       this.currentShip.setPosition(x, y)
-      this.field.setCursor('grab')
+      this.instance.setCursor('grab')
       this.redrawShips()
     }
   }
 
-  private setMouseOutHandler(): void {
-    this.field.mouseOut = () => {
+  private setMouseOut(): void {
+    this.instance.mouseOut = () => {
       if (!this.currentShip) return
 
       this.moveToStartPosition(this.currentShip)
@@ -74,8 +77,8 @@ export default class Field {
     }
   }
 
-  public setClickHandler(): void {
-    this.field.click = event => {
+  public setClick(): void {
+    this.instance.click = event => {
       this.removeDefaultAction(event)
 
       const position = Utilities.getMouseCoordinates(event)
@@ -85,8 +88,8 @@ export default class Field {
     }
   }
 
-  private setContextMenuHandler(): void {
-    this.field.contextMenu = event => {
+  private setContextMenu(): void {
+    this.instance.contextMenu = event => {
       this.removeDefaultAction(event)
       if (!this.currentShip) return
 
@@ -112,9 +115,9 @@ export default class Field {
   private putCurrentShip(): void {
     if (!this.currentShip) return
 
-    const field = { x: 0, y: 0, w: Config.size, h: Config.size }
+    const sizeField = { x: 0, y: 0, w: Config.size, h: Config.size }
 
-    if (Utilities.isRectInsideRect(this.currentShip, field)) {
+    if (Utilities.isRectInsideRect(this.currentShip, sizeField)) {
       this.putShip(this.currentShip)
     }
 
@@ -181,9 +184,9 @@ export default class Field {
 
   private occupyAroundShip(y: number, x: number): boolean {
     try {
-      for (const d of Directions) {
-        const dx = x + d.c
-        const dy = y + d.r
+      for (const { c, r } of Directions) {
+        const dx = x + c
+        const dy = y + r
         const grid = this.gridPositions
         const boundX = dx > grid.length - 1 || dx < 0
         const boundY = dy > grid.length - 1 || dy < 0
@@ -223,15 +226,15 @@ export default class Field {
 
   private resetCurrentShip(): void {
     this.currentShip = null
-    this.field.setCursor('default')
+    this.instance.setCursor('default')
   }
 
   private redrawShips(): void {
-    this.field.clear()
+    this.instance.clear()
     this.drawShips()
   }
 
   private drawShips(): void {
-    this.ships.forEach(s => s.draw())
+    this.ships.forEach(s => s.draw(this.instance.ctx))
   }
 }

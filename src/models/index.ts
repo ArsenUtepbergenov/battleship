@@ -8,8 +8,6 @@ export type CanvasConfig = {
 export type ButtonConfig = {
   parentElement: string
   id?: string
-  width?: number
-  height?: number
   text?: string
 }
 
