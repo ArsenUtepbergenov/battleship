@@ -36,6 +36,10 @@ export default class Field {
     this.drawShips()
   }
 
+  public undo(): void {
+    console.log('undo')
+  }
+
   private setHandlers(): void {
     this.setMouseMove()
     this.setMouseOut()
@@ -88,7 +92,7 @@ export default class Field {
     }
   }
 
-  public setClick(): void {
+  private setClick(): void {
     this.instance.click = event => {
       Utilities.removeDefaultAction(event)
 

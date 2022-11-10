@@ -22,6 +22,10 @@ export default class Battleship {
     this.field.clear()
   }
 
+  public undoLastAction(): void {
+    this.field.undo()
+  }
+
   private putShipsToField(): void {
     this.field.putShips(this.ships)
   }

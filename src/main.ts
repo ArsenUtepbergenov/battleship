@@ -5,7 +5,6 @@ import './styles/base.css'
 
 function main() {
   const game = new Battleship()
-
   game.run()
 
   const restartButton = new Button({
@@ -14,9 +13,14 @@ function main() {
     text: 'restart',
   })
 
-  restartButton.click = () => {
-    game.rerun()
-  }
+  const undoLastAction = new Button({
+    parentElement: 'controls',
+    id: 'undo-button',
+    text: 'undo',
+  })
+
+  restartButton.click = () => game.rerun()
+  undoLastAction.click = () => game.undoLastAction()
 }
 
 main()

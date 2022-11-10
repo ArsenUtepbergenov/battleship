@@ -1,3 +1,7 @@
+:root {
+  --grid-color: darkslateblue
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -5,7 +9,7 @@ html, body {
 }
 
 canvas {
-  outline: 2px solid #2586b4;
+  outline: 2px solid var(--grid-color);
 }
 
 #app {
@@ -49,23 +53,33 @@ canvas {
 }
 
 #controls {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  margin: 20px auto;
 }
 
 button {
   border: 0;
-  padding: 10px 22px;
-  text-transform: capitalize;
   font-size: 1em;
-  background-color: #8bc34a;
+  margin-right: 16px;
+  padding: 10px 22px;
   border-radius: 3px;
-  color: white;
   letter-spacing: 1px;
+  color: white;
   cursor: pointer;
+  text-transform: capitalize;
 }
 
-button:hover {
-  background-color: #7bae37;
+#controls-restart-button {
+  background-color: darkslateblue;
+}
+
+#controls-restart-button:hover {
+  background-color: #291f6c;
+}
+
+#controls-undo-button {
+  background-color: lightcoral;
+}
+
+#controls-undo-button:hover {
+  background-color: #c96060;
 }
