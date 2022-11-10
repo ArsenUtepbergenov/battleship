@@ -83,3 +83,11 @@ button {
 #controls-undo-button:hover {
   background-color: #c96060;
 }
+
+#controls-play-button {
+  background-color: #6fbb40;
+}
+
+#controls-play-button:hover {
+  background-color: #5a9d30;
+}

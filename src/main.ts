@@ -7,20 +7,27 @@ function main() {
   const game = new Battleship()
   game.run()
 
+  const playButton = new Button({
+    parentElement: 'controls',
+    id: 'play-button',
+    text: 'play',
+  })
+
   const resetAllButton = new Button({
     parentElement: 'controls',
     id: 'reset-all-button',
     text: 'reset all',
   })
 
-  const undoLastAction = new Button({
+  const undoLastButton = new Button({
     parentElement: 'controls',
     id: 'undo-button',
     text: 'undo last',
   })
 
-  resetAllButton.click = () => game.rerun()
-  undoLastAction.click = () => game.undoLastAction()
+  playButton.click = () => game.play()
+  resetAllButton.click = () => game.reset()
+  undoLastButton.click = () => game.undoLastAction()
 }
 
 main()

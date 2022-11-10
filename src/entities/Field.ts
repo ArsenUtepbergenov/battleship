@@ -21,6 +21,11 @@ export default class Field {
     this.setHandlers()
   }
 
+  public freeze(): void {
+    console.log('freeze')
+    //TODO: make styles for disabled buttons
+  }
+
   public clear(): void {
     this.resetCurrentShip()
     this.gridPositions = getDefaultGrid()

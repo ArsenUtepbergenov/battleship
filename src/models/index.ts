@@ -1,3 +1,10 @@
+export enum GameState {
+  START,
+  RUN,
+  PLAY,
+  OVER,
+}
+
 export type CanvasConfig = {
   parentElement: string
   id?: string
