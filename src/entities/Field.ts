@@ -1,6 +1,8 @@
 import Canvas from '@/components/Canvas'
 import { Ship } from '@/entities/Ship'
-import { Config, Directions, FieldParams, IPoint, Orientation } from '@/models'
+import { Config, Directions, FieldParams } from '@/models'
+import { Orientation } from '@/models/enums'
+import { IPoint } from '@/models/types'
 import Utilities from '@/utils'
 import Point from './Point'
 
@@ -23,7 +25,7 @@ export default class Field {
   }
 
   public freeze(): void {
-    if (!this.areAllShipsOnField) return
+    if (!this.isReady) return
 
     this.unsetHandlers()
   }
@@ -31,6 +33,10 @@ export default class Field {
   public unfreeze(): void {
     this.clear()
     this.setHandlers()
+  }
+
+  public get isReady(): boolean {
+    return this.areAllShipsOnField
   }
 
   public clear(): void {

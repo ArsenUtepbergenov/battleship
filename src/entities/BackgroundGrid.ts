@@ -1,12 +1,12 @@
 import Canvas from '@/components/Canvas'
-import { BgCanvasParams, Config } from '@/models'
+import { BackgroundGridParams, Config } from '@/models'
 
 export default class BackgroundGrid {
   private bgCanvas: Canvas
   private c: CanvasRenderingContext2D | null = null
 
   constructor() {
-    this.bgCanvas = new Canvas(BgCanvasParams)
+    this.bgCanvas = new Canvas(BackgroundGridParams)
     this.c = this.bgCanvas.ctx
   }
 

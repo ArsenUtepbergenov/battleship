@@ -1,4 +1,5 @@
-import { IRect, CanvasConfig, EventHandler } from '@/models'
+import { CanvasConfig, EventHandler } from '@/models'
+import { IRect } from '@/models/types'
 
 export default class Canvas {
   private width = 0

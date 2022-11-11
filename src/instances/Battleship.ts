@@ -1,31 +1,30 @@
 import Field from '@/entities/Field'
 import BackgroundGrid from '@/entities/BackgroundGrid'
 import { createShips, Ship } from '@/entities/Ship'
-import { EventHandler, GameState } from '@/models'
 import Button from '@/components/controls/Button'
-import Controller from '@/entities/Controller'
+import GameController from '@/entities/GameController'
+import { GameState } from '@/models/enums'
 
 export default class Battleship {
-  private controller: Controller = new Controller()
-  private state: GameState = GameState.START
+  private controller: GameController = new GameController()
   private backgroundGrid: BackgroundGrid = new BackgroundGrid()
   private field: Field = new Field()
   private ships: Ship[] = []
-  private controls: Map<Button, EventHandler> = new Map()
+  private controls: Button[] = []
 
   public run(): void {
     this.backgroundGrid.draw()
     this.createShips()
     this.putShipsToSpot()
-    this.state = GameState.RUN
     this.createControls()
   }
 
   public play(): void {
-    if (this.state !== GameState.RUN) return
+    if (!this.field.isReady) return
 
     this.field.freeze()
-    this.state = GameState.PLAY
+    this.unsetControls()
+    this.controller.setState(GameState.PLAY)
   }
 
   public createControls(): void {
@@ -33,17 +32,11 @@ export default class Battleship {
     const resetAllButton = new Button({ id: 'reset-all-button', text: 'reset all' })
     const undoLastButton = new Button({ id: 'undo-button', text: 'undo last' })
 
-    playButton.click = () => {
-      this.play()
-      this.unsetControls()
-      this.controller.changeStateOfGame(this.state)
-    }
+    playButton.click = () => this.play()
     resetAllButton.click = () => this.reset()
     undoLastButton.click = () => this.undoLastAction()
 
-    this.controls.set(playButton, playButton.click)
-    this.controls.set(resetAllButton, resetAllButton.click)
-    this.controls.set(undoLastButton, undoLastButton.click)
+    this.controls.push(playButton, resetAllButton, undoLastButton)
 
     this.controller.attach(playButton)
     this.controller.attach(resetAllButton)
@@ -52,8 +45,7 @@ export default class Battleship {
 
   public reset(): void {
     this.field.clear()
-    this.state = GameState.RUN
-    this.controller.changeStateOfGame(this.state)
+    this.controller.setState(GameState.RUN)
   }
 
   public undoLastAction(): void {
@@ -61,7 +53,7 @@ export default class Battleship {
   }
 
   private unsetControls(): void {
-    this.controls.forEach((v, _) => (v = null))
+    this.controls.forEach(c => (c.click = null))
   }
 
   private putShipsToSpot(): void {

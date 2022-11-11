@@ -1,24 +1,15 @@
-import { GameState } from '@/models'
+import { GameState } from '@/models/enums'
+import { IObserver, ISubject } from '@/models/types'
 
-export interface Observer {
-  update(subject: Subject): void
-}
-
-export interface Subject {
-  attach(observer: Observer): void
-  detach(observer: Observer): void
-  notify(): void
-}
-
-export default class Controller implements Subject {
+export default class GameController implements ISubject {
   public state: GameState = GameState.START
-  private observers: Observer[] = []
+  private observers: IObserver[] = []
 
-  public attach(observer: Observer): void {
+  public attach(observer: IObserver): void {
     try {
       const isExist = this.observers.includes(observer)
 
-      if (isExist) throw new Error('Observer has been attached already')
+      if (isExist) throw new Error('IObserver has been attached already')
 
       this.observers.push(observer)
     } catch (error) {
@@ -26,7 +17,7 @@ export default class Controller implements Subject {
     }
   }
 
-  public detach(observer: Observer): void {
+  public detach(observer: IObserver): void {
     try {
       const observerIndex = this.observers.indexOf(observer)
 
@@ -42,7 +33,7 @@ export default class Controller implements Subject {
     this.observers.forEach(o => o.update(this))
   }
 
-  public changeStateOfGame(state: GameState): void {
+  public setState(state: GameState): void {
     this.state = state
     this.notify()
   }

@@ -1,9 +1,4 @@
-export enum GameState {
-  START,
-  RUN,
-  PLAY,
-  OVER,
-}
+import { Ships } from './enums'
 
 export type CanvasConfig = {
   parentElement: string
@@ -18,18 +13,11 @@ export type ButtonConfig = {
   text?: string
 }
 
-export enum Ships {
-  TorpedoBoat = 1,
-  Destroyer = 2,
-  Cruiser = 3,
-  Battleship = 4,
-}
-
 export const TypeShips = [
   { amount: 2, type: Ships.TorpedoBoat },
-  { amount: 3, type: Ships.Destroyer },
-  { amount: 2, type: Ships.Cruiser },
-  { amount: 1, type: Ships.Battleship },
+  // { amount: 3, type: Ships.Destroyer },
+  // { amount: 2, type: Ships.Cruiser },
+  // { amount: 1, type: Ships.Battleship },
 ]
 
 export abstract class Config {
@@ -46,23 +34,6 @@ export abstract class Config {
 
 export type EventHandler = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
 
-export enum Orientation {
-  H = 'horizontal',
-  V = 'vertical',
-}
-
-export interface IRect {
-  x: number
-  y: number
-  w: number
-  h: number
-}
-
-export interface IPoint {
-  x: number
-  y: number
-}
-
 export type ShipParams = {
   x: number
   y: number
@@ -70,7 +41,7 @@ export type ShipParams = {
   id?: string
 }
 
-export const BgCanvasParams = {
+export const BackgroundGridParams = {
   parentElement: 'field',
   id: 'grid',
   width: Config.size,

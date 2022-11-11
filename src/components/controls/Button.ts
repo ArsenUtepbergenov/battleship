@@ -1,7 +1,9 @@
-import Controller, { Observer, Subject } from '@/entities/Controller'
-import { ButtonConfig, EventHandler, GameState } from '@/models'
+import Controller from '@/entities/GameController'
+import { ButtonConfig, EventHandler } from '@/models'
+import { GameState } from '@/models/enums'
+import { IObserver, ISubject } from '@/models/types'
 
-export default class Button implements Observer {
+export default class Button implements IObserver {
   private instance: HTMLButtonElement
 
   constructor({ parentElement, id, text }: ButtonConfig) {
@@ -26,7 +28,7 @@ export default class Button implements Observer {
     }
   }
 
-  public update(subject: Subject): void {
+  public update(subject: ISubject): void {
     if (subject instanceof Controller && subject.state === GameState.PLAY) {
       this.disable()
     }

@@ -1,4 +1,6 @@
-import { Config, IRect, Orientation, ShipParams, TypeShips } from '@/models'
+import { Config, ShipParams, TypeShips } from '@/models'
+import { Orientation } from '@/models/enums'
+import { IRect } from '@/models/types'
 
 export function createShips(): Ship[] {
   const ships: Ship[] = []

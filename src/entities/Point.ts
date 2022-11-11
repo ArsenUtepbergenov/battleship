@@ -1,4 +1,4 @@
-import { IPoint } from '@/models'
+import { IPoint } from '@/models/types'
 
 export default class Point implements IPoint {
   public x: number = 0
