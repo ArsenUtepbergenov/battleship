@@ -1,5 +1,4 @@
-import { IRect } from './../models/index'
-import { CanvasConfig, EventHandlerParams } from '@/models'
+import { IRect, CanvasConfig, EventHandler } from '@/models'
 
 export default class Canvas {
   private width = 0
@@ -51,27 +50,27 @@ export default class Canvas {
     return this.instance.getBoundingClientRect()
   }
 
-  public set mouseDown(fn: EventHandlerParams) {
+  public set mouseDown(fn: EventHandler) {
     this.instance.onmousedown = fn
   }
 
-  public set mouseMove(fn: EventHandlerParams) {
+  public set mouseMove(fn: EventHandler) {
     this.instance.onmousemove = fn
   }
 
-  public set mouseUp(fn: EventHandlerParams) {
+  public set mouseUp(fn: EventHandler) {
     this.instance.onmouseup = fn
   }
 
-  public set mouseOut(fn: EventHandlerParams) {
+  public set mouseOut(fn: EventHandler) {
     this.instance.onmouseout = fn
   }
 
-  public set click(fn: EventHandlerParams) {
+  public set click(fn: EventHandler) {
     this.instance.onclick = fn
   }
 
-  public set contextMenu(fn: EventHandlerParams) {
+  public set contextMenu(fn: EventHandler) {
     this.instance.oncontextmenu = fn
   }
 }

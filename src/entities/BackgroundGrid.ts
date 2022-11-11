@@ -1,5 +1,5 @@
+import Canvas from '@/components/Canvas'
 import { BgCanvasParams, Config } from '@/models'
-import Canvas from './Canvas'
 
 export default class BackgroundGrid {
   private bgCanvas: Canvas

@@ -1,6 +1,7 @@
-import { ButtonConfig, EventHandlerParams } from '@/models'
+import Controller, { Observer, Subject } from '@/entities/Controller'
+import { ButtonConfig, EventHandler, GameState } from '@/models'
 
-export default class Button {
+export default class Button implements Observer {
   private instance: HTMLButtonElement
 
   constructor({ parentElement, id, text }: ButtonConfig) {
@@ -9,7 +10,7 @@ export default class Button {
     this.init({ parentElement, id, text })
   }
 
-  private init({ parentElement, id, text = '' }: ButtonConfig): void {
+  private init({ parentElement = 'controls', id, text = '' }: ButtonConfig): void {
     try {
       const parent = document.getElementById(parentElement)
 
@@ -25,7 +26,21 @@ export default class Button {
     }
   }
 
-  public set click(fn: EventHandlerParams) {
+  public update(subject: Subject): void {
+    if (subject instanceof Controller && subject.state === GameState.PLAY) {
+      this.disable()
+    }
+  }
+
+  public disable(): void {
+    this.setAttribute('disabled', '')
+  }
+
+  public undisable(): void {
+    this.removeAttribute('disabled')
+  }
+
+  public set click(fn: EventHandler) {
     this.instance.onclick = fn
   }
 
@@ -35,5 +50,9 @@ export default class Button {
 
   public setAttribute(qualifiedName: string, value: string): void {
     this.instance.setAttribute(qualifiedName, value)
+  }
+
+  public removeAttribute(qualifiedName: string): void {
+    this.instance.removeAttribute(qualifiedName)
   }
 }

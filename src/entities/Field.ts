@@ -1,7 +1,7 @@
+import Canvas from '@/components/Canvas'
 import { Ship } from '@/entities/Ship'
 import { Config, Directions, FieldParams, IPoint, Orientation } from '@/models'
 import Utilities from '@/utils'
-import Canvas from './Canvas'
 import Point from './Point'
 
 // default constants
@@ -29,8 +29,7 @@ export default class Field {
   }
 
   public unfreeze(): void {
-    this.areAllShipsOnField = true
-
+    this.clear()
     this.setHandlers()
   }
 

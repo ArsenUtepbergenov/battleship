@@ -13,10 +13,24 @@ export type CanvasConfig = {
 }
 
 export type ButtonConfig = {
-  parentElement: string
+  parentElement?: string
   id?: string
   text?: string
 }
+
+export enum Ships {
+  TorpedoBoat = 1,
+  Destroyer = 2,
+  Cruiser = 3,
+  Battleship = 4,
+}
+
+export const TypeShips = [
+  { amount: 2, type: Ships.TorpedoBoat },
+  { amount: 3, type: Ships.Destroyer },
+  { amount: 2, type: Ships.Cruiser },
+  { amount: 1, type: Ships.Battleship },
+]
 
 export abstract class Config {
   static size = 400
@@ -27,17 +41,10 @@ export abstract class Config {
   static shipSize = Config.cellSize
   static shipsSpotSize = Config.shipSize * 8
   static gridPositionsSize = Config.size / Config.cellSize
-  static numberShips = 10
+  static numberShips = TypeShips.reduce((a, prev) => a + prev.amount, 0)
 }
 
-export type EventHandlerParams = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
-
-export enum Ships {
-  TorpedoBoat = 1,
-  Destroyer = 2,
-  Cruiser = 3,
-  Battleship = 4,
-}
+export type EventHandler = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
 
 export enum Orientation {
   H = 'horizontal',
@@ -62,13 +69,6 @@ export type ShipParams = {
   type: Ships
   id?: string
 }
-
-export const TypeShips = [
-  { amount: 4, type: Ships.TorpedoBoat },
-  { amount: 3, type: Ships.Destroyer },
-  { amount: 2, type: Ships.Cruiser },
-  { amount: 1, type: Ships.Battleship },
-]
 
 export const BgCanvasParams = {
   parentElement: 'field',
