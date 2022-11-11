@@ -91,3 +91,10 @@ button {
 #controls-play-button:hover {
   background-color: #5a9d30;
 }
+
+#controls-play-button:disabled,
+#controls-reset-all-button:disabled,
+#controls-undo-button:disabled {
+  background-color: #cacaca;
+  cursor: unset;
+}

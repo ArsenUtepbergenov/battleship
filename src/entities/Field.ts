@@ -16,14 +16,22 @@ export default class Field {
   private offset = new Point()
   private gridPositions: number[][] = getDefaultGrid()
   private shipsOnField: Ship[] = []
+  private areAllShipsOnField: boolean = false
 
   constructor() {
     this.setHandlers()
   }
 
   public freeze(): void {
-    console.log('freeze')
-    //TODO: make styles for disabled buttons
+    if (!this.areAllShipsOnField) return
+
+    this.unsetHandlers()
+  }
+
+  public unfreeze(): void {
+    this.areAllShipsOnField = true
+
+    this.setHandlers()
   }
 
   public clear(): void {
@@ -33,10 +41,11 @@ export default class Field {
     this.shipsOnField = []
     this.shipsStartPositions.clear()
     this.offset = new Point()
+    this.areAllShipsOnField = false
     this.redrawShips()
   }
 
-  public putShips(ships: Ship[]): void {
+  public setShips(ships: Ship[]): void {
     this.ships = ships
     this.drawShips()
   }
@@ -237,6 +246,7 @@ export default class Field {
 
     this.setPositionOfShip(ship, iX * size + 2, iY * size + 2)
     this.shipsOnField.push(ship)
+    this.areAllShipsOnField = this.shipsOnField.length === Config.numberShips
   }
 
   private occupyAroundShip(y: number, x: number, from: number = 0, to: number = -1): boolean {

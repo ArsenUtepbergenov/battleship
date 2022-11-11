@@ -27,6 +27,7 @@ export abstract class Config {
   static shipSize = Config.cellSize
   static shipsSpotSize = Config.shipSize * 8
   static gridPositionsSize = Config.size / Config.cellSize
+  static numberShips = 10
 }
 
 export type EventHandlerParams = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null

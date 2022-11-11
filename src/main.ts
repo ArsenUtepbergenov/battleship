@@ -25,7 +25,15 @@ function main() {
     text: 'undo last',
   })
 
-  playButton.click = () => game.play()
+  playButton.click = () => {
+    playButton.setAttribute('disabled', '')
+    resetAllButton.setAttribute('disabled', '')
+    undoLastButton.setAttribute('disabled', '')
+    playButton.click = null
+    resetAllButton.click = null
+    undoLastButton.click = null
+    game.play()
+  }
   resetAllButton.click = () => game.reset()
   undoLastButton.click = () => game.undoLastAction()
 }

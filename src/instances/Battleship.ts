@@ -5,14 +5,9 @@ import { GameState } from '@/models'
 
 export default class Battleship {
   private state: GameState = GameState.START
-  private backgroundGrid: BackgroundGrid
-  private field: Field
+  private backgroundGrid: BackgroundGrid = new BackgroundGrid()
+  private field: Field = new Field()
   private ships: Ship[] = []
-
-  constructor() {
-    this.backgroundGrid = new BackgroundGrid()
-    this.field = new Field()
-  }
 
   public run(): void {
     this.backgroundGrid.draw()
@@ -22,7 +17,10 @@ export default class Battleship {
   }
 
   public play(): void {
-    this.state === GameState.RUN && this.field.freeze()
+    if (this.state !== GameState.RUN) return
+
+    this.field.freeze()
+    this.state = GameState.PLAY
   }
 
   public reset(): void {
@@ -34,8 +32,12 @@ export default class Battleship {
     this.field.undo()
   }
 
+  public get isStatePlay(): boolean {
+    return this.state === GameState.PLAY
+  }
+
   private putShipsToSpot(): void {
-    this.field.putShips(this.ships)
+    this.field.setShips(this.ships)
   }
 
   private createShips(): void {

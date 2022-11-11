@@ -28,4 +28,12 @@ export default class Button {
   public set click(fn: EventHandlerParams) {
     this.instance.onclick = fn
   }
+
+  public setClassList(classes: string[]): void {
+    this.instance.classList.add(...classes)
+  }
+
+  public setAttribute(qualifiedName: string, value: string): void {
+    this.instance.setAttribute(qualifiedName, value)
+  }
 }
