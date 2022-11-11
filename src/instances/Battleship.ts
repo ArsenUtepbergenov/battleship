@@ -1,9 +1,10 @@
 import Field from '@/entities/Field'
-import BackgroundGrid from '@/entities/BackgroundGrid'
-import { createShips, Ship } from '@/entities/Ship'
 import Button from '@/components/controls/Button'
+import BackgroundGrid from '@/entities/BackgroundGrid'
 import GameController from '@/entities/GameController'
+import Notification from '@/components/notifications/Notification'
 import { GameState } from '@/models/enums'
+import { createShips, Ship } from '@/entities/Ship'
 
 export default class Battleship {
   private controller: GameController = new GameController()
@@ -16,21 +17,31 @@ export default class Battleship {
     this.backgroundGrid.draw()
     this.createShips()
     this.putShipsToSpot()
-    this.createControls()
+    this.setControls()
   }
 
   public play(): void {
-    if (!this.field.isReady) return
+    if (!this.field.isReady) {
+      const notification = new Notification({
+        parentElement: 'notifications-container',
+        id: '',
+        text: 'test',
+      })
+      //TODO: make styles and life time for the notification
+
+      return
+    }
 
     this.field.freeze()
     this.unsetControls()
     this.controller.setState(GameState.PLAY)
   }
 
-  public createControls(): void {
-    const playButton = new Button({ id: 'play-button', text: 'play' })
-    const resetAllButton = new Button({ id: 'reset-all-button', text: 'reset all' })
-    const undoLastButton = new Button({ id: 'undo-button', text: 'undo last' })
+  public setControls(): void {
+    const parentElement = 'controls'
+    const playButton = new Button({ parentElement, id: 'play-button', text: 'play' })
+    const resetAllButton = new Button({ parentElement, id: 'reset-all-button', text: 'reset all' })
+    const undoLastButton = new Button({ parentElement, id: 'undo-button', text: 'undo last' })
 
     playButton.click = () => this.play()
     resetAllButton.click = () => this.reset()

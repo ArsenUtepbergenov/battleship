@@ -1,17 +1,21 @@
 import { Ships } from './enums'
 
-export type CanvasConfig = {
+export type ElementConfig = {
   parentElement: string
   id?: string
+}
+
+export type CanvasConfig = ElementConfig & {
   width: number
   height: number
 }
 
-export type ButtonConfig = {
-  parentElement?: string
-  id?: string
-  text?: string
+export type NodeWithText = ElementConfig & {
+  text: string
 }
+
+export type ButtonConfig = NodeWithText
+export type NotificationConfig = NodeWithText
 
 export const TypeShips = [
   { amount: 2, type: Ships.TorpedoBoat },
