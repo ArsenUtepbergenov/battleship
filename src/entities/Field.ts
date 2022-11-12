@@ -21,6 +21,7 @@ export default class Field {
   private areAllShipsOnField: boolean = false
 
   constructor() {
+    this.instance.appendTo('field')
     this.setHandlers()
   }
 

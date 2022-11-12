@@ -16,3 +16,8 @@ export enum Orientation {
   H = 'horizontal',
   V = 'vertical',
 }
+
+export enum NotificationType {
+  DEFAULT,
+  ERROR,
+}

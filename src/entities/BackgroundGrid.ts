@@ -2,16 +2,20 @@ import Canvas from '@/components/Canvas'
 import { BackgroundGridParams, Config } from '@/models'
 
 export default class BackgroundGrid {
-  private bgCanvas: Canvas
-  private c: CanvasRenderingContext2D | null = null
+  private canvas: Canvas
+  private ctx: CanvasRenderingContext2D | null = null
 
   constructor() {
-    this.bgCanvas = new Canvas(BackgroundGridParams)
-    this.c = this.bgCanvas.ctx
+    this.canvas = new Canvas(BackgroundGridParams)
+    this.ctx = this.canvas.ctx
+  }
+
+  public appendTo(parentNode: string): void {
+    this.canvas.appendTo(parentNode)
   }
 
   public draw(): void {
-    const c = this.c
+    const c = this.ctx
     if (!c) return
 
     c.lineWidth = 2

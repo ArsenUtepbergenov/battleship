@@ -1,4 +1,4 @@
-import { CanvasConfig, EventHandler } from '@/models'
+import { CanvasNode, EventHandler } from '@/models'
 import { IRect } from '@/models/types'
 
 export default class Canvas {
@@ -7,24 +7,31 @@ export default class Canvas {
   private context: CanvasRenderingContext2D
   private instance: HTMLCanvasElement
 
-  constructor({ parentElement, id, width, height }: CanvasConfig) {
+  constructor({ id, width, height }: CanvasNode) {
     this.instance = document.createElement('canvas')
     this.context = this.instance.getContext('2d')!
 
-    this.init({ parentElement, id, width, height })
+    this.init({ id, width, height })
   }
 
-  private init({ parentElement, id, width, height }: CanvasConfig): void {
+  public appendTo(parentNode: string): void {
     try {
-      const parent = document.getElementById(parentElement)
+      const parent = document.getElementById(parentNode)
 
       if (parent) {
-        id && this.instance.setAttribute('id', `${parentElement}-${id}`)
         parent.appendChild(this.instance)
-        this.setSize(width, height)
       } else {
-        throw new Error(`Can't find the '${parentElement}' element`)
+        throw new Error(`Can't find the '${parentNode}' node`)
       }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  private init({ id, width, height }: CanvasNode): void {
+    try {
+      id && this.instance.setAttribute('id', id)
+      this.setSize(width, height)
     } catch (error) {
       console.error(error)
     }

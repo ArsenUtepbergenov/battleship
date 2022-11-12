@@ -1,18 +1,18 @@
 import Controller from '@/entities/GameController'
-import { ButtonConfig } from '@/models'
+import { ButtonNode } from '@/models'
 import { GameState } from '@/models/enums'
 import { IObserver, ISubject } from '@/models/types'
 import Element from '../Element'
 
 export default class Button extends Element implements IObserver {
-  constructor({ parentElement, id, text }: ButtonConfig) {
+  constructor({ id, defaultClassList, text }: ButtonNode) {
     super('button')
-    this.init({ parentElement, id, text })
+    this.init({ id, defaultClassList, text })
   }
 
-  protected init({ parentElement, id, text = '' }: ButtonConfig): void {
+  protected init({ id, defaultClassList, text = '' }: ButtonNode): void {
     try {
-      super.init({ parentElement, id })
+      super.init({ id, defaultClassList })
       this.instance.innerHTML = text
     } catch (error) {
       console.error(error)

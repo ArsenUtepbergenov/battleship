@@ -3,8 +3,9 @@ import Button from '@/components/controls/Button'
 import BackgroundGrid from '@/entities/BackgroundGrid'
 import GameController from '@/entities/GameController'
 import Notification from '@/components/notifications/Notification'
-import { GameState } from '@/models/enums'
+import { Messages } from '@/models'
 import { createShips, Ship } from '@/entities/Ship'
+import { GameState, NotificationType } from '@/models/enums'
 
 export default class Battleship {
   private controller: GameController = new GameController()
@@ -14,6 +15,7 @@ export default class Battleship {
   private controls: Button[] = []
 
   public run(): void {
+    this.backgroundGrid.appendTo('field')
     this.backgroundGrid.draw()
     this.createShips()
     this.putShipsToSpot()
@@ -23,11 +25,10 @@ export default class Battleship {
   public play(): void {
     if (!this.field.isReady) {
       const notification = new Notification({
-        parentElement: 'notifications-container',
-        id: '',
-        text: 'test',
+        text: Messages.NotAllShipsError,
+        type: NotificationType.ERROR,
       })
-      //TODO: make styles and life time for the notification
+      notification.appendTo('notifications-container')
 
       return
     }
@@ -38,16 +39,17 @@ export default class Battleship {
   }
 
   public setControls(): void {
-    const parentElement = 'controls'
-    const playButton = new Button({ parentElement, id: 'play-button', text: 'play' })
-    const resetAllButton = new Button({ parentElement, id: 'reset-all-button', text: 'reset all' })
-    const undoLastButton = new Button({ parentElement, id: 'undo-button', text: 'undo last' })
+    const playButton = new Button({ id: 'play-button', text: 'play' })
+    const resetAllButton = new Button({ id: 'reset-all-button', text: 'reset all' })
+    const undoLastButton = new Button({ id: 'undo-button', text: 'undo last' })
 
     playButton.click = () => this.play()
     resetAllButton.click = () => this.reset()
     undoLastButton.click = () => this.undoLastAction()
 
     this.controls.push(playButton, resetAllButton, undoLastButton)
+
+    this.appendControls()
 
     this.controller.attach(playButton)
     this.controller.attach(resetAllButton)
@@ -61,6 +63,10 @@ export default class Battleship {
 
   public undoLastAction(): void {
     this.field.undo()
+  }
+
+  private appendControls(): void {
+    this.controls.forEach(c => c.appendTo('controls'))
   }
 
   private unsetControls(): void {

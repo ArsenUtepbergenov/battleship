@@ -1,21 +1,27 @@
-import { Ships } from './enums'
+import { NotificationType, Ships } from './enums'
 
-export type ElementConfig = {
-  parentElement: string
+export type Node = {
   id?: string
+  defaultClassList?: string[]
 }
 
-export type CanvasConfig = ElementConfig & {
+export type CanvasNode = Node & {
   width: number
   height: number
 }
 
-export type NodeWithText = ElementConfig & {
+export type TextNode = Node & {
   text: string
 }
 
-export type ButtonConfig = NodeWithText
-export type NotificationConfig = NodeWithText
+export type ButtonNode = Node & {
+  text: string
+}
+
+export type NotificationNode = Node & {
+  text?: string
+  type?: NotificationType
+}
 
 export const TypeShips = [
   { amount: 2, type: Ships.TorpedoBoat },
@@ -72,3 +78,7 @@ export const Directions = [
   { r: 1, c: -1 },
   { r: -1, c: -1 },
 ]
+
+export const Messages = {
+  NotAllShipsError: 'Put all ships on the field!',
+}

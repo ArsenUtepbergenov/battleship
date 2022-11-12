@@ -1,4 +1,4 @@
-import { ElementConfig, EventHandler } from '@/models'
+import { Node, EventHandler } from '@/models'
 
 export default abstract class Element {
   protected instance: HTMLElement
@@ -7,15 +7,19 @@ export default abstract class Element {
     this.instance = document.createElement(nameElement)
   }
 
-  protected init({ parentElement, id }: ElementConfig): void {
+  protected init({ id, defaultClassList }: Node): void {
+    id && this.instance.setAttribute('id', id)
+    defaultClassList?.length && this.setClassList(defaultClassList)
+  }
+
+  public appendTo(parentNode: string): void {
     try {
-      const parent = document.getElementById(parentElement)
+      const parent = document.getElementById(parentNode)
 
       if (parent) {
-        id && this.instance.setAttribute('id', `${parentElement}-${id}`)
         parent.appendChild(this.instance)
       } else {
-        throw new Error(`Can't find the '${parentElement}' element`)
+        throw new Error(`Can't find the '${parentNode}' node`)
       }
     } catch (error) {
       console.error(error)

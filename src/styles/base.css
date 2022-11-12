@@ -18,6 +18,7 @@ canvas {
   display: flex;
   flex-direction: column;
   width: fit-content;
+  height: 100vh;
 }
 
 #field {
@@ -46,7 +47,7 @@ canvas {
   text-align: center;
 }
 
-#field-game {
+#game {
   position: absolute;
   left: 40px;
   top: 40px;
@@ -68,33 +69,59 @@ button {
   text-transform: capitalize;
 }
 
-#controls-reset-all-button {
+#reset-all-button {
   background-color: darkslateblue;
 }
 
-#controls-reset-all-button:hover {
+#reset-all-button:hover {
   background-color: #291f6c;
 }
 
-#controls-undo-button {
+#undo-button {
   background-color: lightcoral;
 }
 
-#controls-undo-button:hover {
+#undo-button:hover {
   background-color: #c96060;
 }
 
-#controls-play-button {
+#play-button {
   background-color: #6fbb40;
 }
 
-#controls-play-button:hover {
+#play-button:hover {
   background-color: #5a9d30;
 }
 
-#controls-play-button:disabled,
-#controls-reset-all-button:disabled,
-#controls-undo-button:disabled {
+#play-button:disabled,
+#reset-all-button:disabled,
+#undo-button:disabled {
   background-color: #cacaca;
   cursor: unset;
+}
+
+#notifications-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  margin-bottom: 20px;
+}
+
+.notification {
+  padding: 6px 14px;
+  font-size: 1.4em;
+  border-radius: 3px;
+  border: 1px solid darkgray;
+  background-color: lightgray;
+  color: darkgray;
+}
+
+.notification:first-letter {
+  text-transform: capitalize;
+}
+
+.notification--error {
+  border: 1px solid darkred;
+  background-color: lightpink;
+  color: darkred;
 }
