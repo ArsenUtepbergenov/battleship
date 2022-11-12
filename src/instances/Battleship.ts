@@ -20,6 +20,12 @@ export default class Battleship {
     this.setControls()
   }
 
+  public over(): void {
+    this.field.reset()
+    this.fightField.reset()
+    this.controller.setState(GameState.OVER)
+  }
+
   public play(): void {
     if (!this.field.isReady) {
       Notifications.create({
@@ -37,29 +43,21 @@ export default class Battleship {
 
   public setControls(): void {
     const playButton = new Button({ id: 'play-button', text: 'play' })
-    const resetAllButton = new Button({ id: 'reset-all-button', text: 'reset all' })
-    const undoLastButton = new Button({ id: 'undo-button', text: 'undo last' })
+    const resetButton = new Button({ id: 'reset-button', text: 'reset' })
+    const undoButton = new Button({ id: 'undo-button', text: 'undo' })
 
     playButton.click = () => this.play()
-    resetAllButton.click = () => this.reset()
-    undoLastButton.click = () => this.undoLastAction()
+    resetButton.click = () => this.field.reset()
+    undoButton.click = () => this.field.undo()
 
-    this.controls.push(playButton, resetAllButton, undoLastButton)
+    this.controls.push(playButton, resetButton, undoButton)
 
     this.appendControls()
-
-    this.controller.attach(playButton)
-    this.controller.attach(resetAllButton)
-    this.controller.attach(undoLastButton)
+    this.attachControls()
   }
 
-  public reset(): void {
-    this.field.clear()
-    this.controller.setState(GameState.RUN)
-  }
-
-  public undoLastAction(): void {
-    this.field.undo()
+  private attachControls(): void {
+    this.controls.forEach(c => this.controller.attach(c))
   }
 
   private appendControls(): void {

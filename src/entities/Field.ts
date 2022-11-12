@@ -7,10 +7,6 @@ import Utilities from '@/utils'
 import BackgroundGrid from './BackgroundGrid'
 import Point from './Point'
 
-// default constants
-const getDefaultGrid = () =>
-  Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
-
 export default class Field {
   private instance: Canvas = new Canvas(FieldParams)
   private backgroundGrid = new BackgroundGrid()
@@ -18,7 +14,7 @@ export default class Field {
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
   private offset = new Point()
-  private gridPositions: number[][] = getDefaultGrid()
+  private gridPositions: number[][] = Utilities.getDefaultGrid()
   private shipsOnField: Ship[] = []
   private areAllShipsOnField: boolean = false
 
@@ -36,7 +32,7 @@ export default class Field {
   }
 
   public unfreeze(): void {
-    this.clear()
+    this.reset()
     this.setHandlers()
   }
 
@@ -44,9 +40,9 @@ export default class Field {
     return this.areAllShipsOnField
   }
 
-  public clear(): void {
+  public reset(): void {
     this.resetCurrentShip()
-    this.gridPositions = getDefaultGrid()
+    this.gridPositions = Utilities.getDefaultGrid()
     this.shipsOnField.forEach(ship => this.moveToStartPosition(ship))
     this.shipsOnField = []
     this.shipsStartPositions.clear()
@@ -194,9 +190,9 @@ export default class Field {
   private putCurrentShip(): void {
     if (!this.currentShip) return
 
-    const sizeField = { x: 0, y: 0, w: Config.size, h: Config.size }
+    const fieldRect = { x: 0, y: 0, w: Config.size, h: Config.size }
 
-    if (Utilities.isRectInsideRect(this.currentShip, sizeField)) {
+    if (Utilities.isRectInsideRect(this.currentShip, fieldRect)) {
       this.putShip(this.currentShip)
     }
   }

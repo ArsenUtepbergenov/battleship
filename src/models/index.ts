@@ -37,6 +37,8 @@ export abstract class Config {
   static cellSize = Math.floor(Config.size / Config.cells)
   static gridColor = '#483d8b'
   static shipColor = '#f08080'
+  static successShotColor = '#8bc34a'
+  static failShotColor = '#f44336'
   static shipSize = Config.cellSize
   static shipsSpotSize = Config.shipSize * 7
   static gridPositionsSize = Config.size / Config.cellSize

@@ -85,11 +85,11 @@ button {
   text-transform: capitalize;
 }
 
-#reset-all-button {
+#reset-button {
   background-color: darkslateblue;
 }
 
-#reset-all-button:hover {
+#reset-button:hover {
   background-color: #291f6c;
 }
 
@@ -110,7 +110,7 @@ button {
 }
 
 #play-button:disabled,
-#reset-all-button:disabled,
+#reset-button:disabled,
 #undo-button:disabled {
   background-color: #cacaca;
   cursor: unset;

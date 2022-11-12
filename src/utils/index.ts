@@ -1,4 +1,5 @@
-import { IRect, IPoint } from '@/models'
+import { Config } from '@/models'
+import { IPoint, IRect } from '@/models/types'
 
 export default class Utilities {
   public static div(numerator: number, denominator: number): number {
@@ -71,4 +72,7 @@ export default class Utilities {
     event.preventDefault()
     event.stopPropagation()
   }
+
+  public static getDefaultGrid = () =>
+    Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
 }
