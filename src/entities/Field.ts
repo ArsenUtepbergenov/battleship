@@ -4,6 +4,7 @@ import { Config, Directions, FieldParams } from '@/models'
 import { Orientation } from '@/models/enums'
 import { IPoint } from '@/models/types'
 import Utilities from '@/utils'
+import BackgroundGrid from './BackgroundGrid'
 import Point from './Point'
 
 // default constants
@@ -12,6 +13,7 @@ const getDefaultGrid = () =>
 
 export default class Field {
   private instance: Canvas = new Canvas(FieldParams)
+  private backgroundGrid = new BackgroundGrid()
   private ships: Ship[] = []
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
@@ -21,6 +23,8 @@ export default class Field {
   private areAllShipsOnField: boolean = false
 
   constructor() {
+    this.backgroundGrid.appendTo('field')
+    this.backgroundGrid.draw()
     this.instance.appendTo('field')
     this.setHandlers()
   }

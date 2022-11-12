@@ -1,22 +1,20 @@
 import Field from '@/entities/Field'
 import Button from '@/components/controls/Button'
 import Notifications from '@/entities/Notifications'
-import BackgroundGrid from '@/entities/BackgroundGrid'
 import GameController from '@/entities/GameController'
 import { Messages } from '@/models'
 import { createShips, Ship } from '@/entities/Ship'
 import { GameState, NotificationType } from '@/models/enums'
+import FightField from '@/entities/FightField'
 
 export default class Battleship {
-  private controller: GameController = new GameController()
-  private backgroundGrid: BackgroundGrid = new BackgroundGrid()
-  private field: Field = new Field()
+  private controller = new GameController()
+  private field = new Field()
+  private fightField = new FightField()
   private ships: Ship[] = []
   private controls: Button[] = []
 
   public run(): void {
-    this.backgroundGrid.appendTo('field')
-    this.backgroundGrid.draw()
     this.createShips()
     this.putShipsToSpot()
     this.setControls()

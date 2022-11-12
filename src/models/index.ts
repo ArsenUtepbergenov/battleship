@@ -59,6 +59,13 @@ export const BackgroundGridParams = {
   height: Config.size,
 }
 
+export const FightFieldParams = {
+  parentElement: 'fight-field',
+  id: 'opponent-game',
+  width: Config.size + Config.shipsSpotSize,
+  height: Config.size,
+}
+
 export const FieldParams = {
   parentElement: 'field',
   id: 'game',

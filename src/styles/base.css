@@ -1,6 +1,7 @@
 :root {
   --grid-color: darkslateblue;
   --field-size: 360px;
+  --game-size: 648px;
   --grid-cell-size: 36px;
 }
 
@@ -18,16 +19,28 @@ canvas {
   font-family: monospace;
   box-sizing: border-box;
   display: flex;
-  flex-direction: column;
-  width: fit-content;
-  height: 100vh;
+  justify-content: space-evenly;
 }
 
+#user-side {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+}
+
+#opponent-side {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+}
+
+#fight-field,
 #field {
   display: grid;
   grid-template-columns: var(--grid-cell-size) var(--field-size);
   grid-template-rows: var(--grid-cell-size) var(--field-size);
-  width: 760px;
+  width: var(--game-size);
+  position: relative;
 }
 
 .axis-x {
@@ -49,6 +62,7 @@ canvas {
   text-align: center;
 }
 
+#opponent-game,
 #game {
   position: absolute;
   left: var(--grid-cell-size);
@@ -102,13 +116,15 @@ button {
   cursor: unset;
 }
 
+#wrapper-notifications-container {
+  position: fixed;
+  bottom: 20px;
+  right: 40px;
+}
+
 #notifications-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  margin-top: auto;
-  margin-bottom: 20px;
-  overflow-y: scroll;
 }
 
 .notification {
