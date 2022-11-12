@@ -21,6 +21,7 @@ export type ButtonNode = Node & {
 export type NotificationNode = Node & {
   text?: string
   type?: NotificationType
+  lifeTime?: number
 }
 
 export const TypeShips = [

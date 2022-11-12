@@ -26,6 +26,20 @@ export default abstract class Element {
     }
   }
 
+  public removeFrom(parentNode: string): void {
+    try {
+      const parent = document.getElementById(parentNode)
+
+      if (parent) {
+        parent.removeChild(this.instance)
+      } else {
+        throw new Error(`Can't find the '${parentNode}' node`)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   public disable(): void {
     this.setAttribute('disabled', '')
   }

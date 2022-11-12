@@ -1,8 +1,8 @@
 import Field from '@/entities/Field'
 import Button from '@/components/controls/Button'
+import Notifications from '@/entities/Notifications'
 import BackgroundGrid from '@/entities/BackgroundGrid'
 import GameController from '@/entities/GameController'
-import Notification from '@/components/notifications/Notification'
 import { Messages } from '@/models'
 import { createShips, Ship } from '@/entities/Ship'
 import { GameState, NotificationType } from '@/models/enums'
@@ -24,11 +24,10 @@ export default class Battleship {
 
   public play(): void {
     if (!this.field.isReady) {
-      const notification = new Notification({
+      Notifications.create({
         text: Messages.NotAllShipsError,
         type: NotificationType.ERROR,
       })
-      notification.appendTo('notifications-container')
 
       return
     }
