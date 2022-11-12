@@ -1,5 +1,7 @@
 :root {
-  --grid-color: darkslateblue
+  --grid-color: darkslateblue;
+  --field-size: 360px;
+  --grid-cell-size: 36px;
 }
 
 html, body {
@@ -23,8 +25,8 @@ canvas {
 
 #field {
   display: grid;
-  grid-template-columns: 40px 400px;
-  grid-template-rows: 40px 400px;
+  grid-template-columns: var(--grid-cell-size) var(--field-size);
+  grid-template-rows: var(--grid-cell-size) var(--field-size);
   width: 760px;
 }
 
@@ -42,15 +44,15 @@ canvas {
 .axis-y, .axis-x span {
   font-size: 28px;
   color: #505050;
-  width: 40px;
-  line-height: 40px;
+  width: var(--grid-cell-size);
+  line-height: var(--grid-cell-size);
   text-align: center;
 }
 
 #game {
   position: absolute;
-  left: 40px;
-  top: 40px;
+  left: var(--grid-cell-size);
+  top: var(--grid-cell-size);
 }
 
 #controls {

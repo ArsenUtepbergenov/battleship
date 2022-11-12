@@ -32,13 +32,13 @@ export const TypeShips = [
 ]
 
 export abstract class Config {
-  static size = 400
+  static size = 360
   static cells = 10
   static cellSize = Math.floor(Config.size / Config.cells)
   static gridColor = '#483d8b'
   static shipColor = '#f08080'
   static shipSize = Config.cellSize
-  static shipsSpotSize = Config.shipSize * 8
+  static shipsSpotSize = Config.shipSize * 7
   static gridPositionsSize = Config.size / Config.cellSize
   static numberShips = TypeShips.reduce((a, prev) => a + prev.amount, 0)
 }

@@ -8,8 +8,8 @@ export function createShips(): Ship[] {
 
   const startX = Config.size + size / 2
 
-  const offsetX = size + 12
-  const offsetY = 80
+  const offsetX = size + 2
+  const offsetY = 36 * 2
 
   for (const [i, ship] of TypeShips.entries()) {
     const { amount, type } = ship
