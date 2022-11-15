@@ -10,16 +10,16 @@ import { IObserver, IPoint, ISubject } from '@/models/types'
 import { Config, Directions, FieldParams, FieldRect } from '@/models'
 
 export default class Field implements IObserver {
-  private instance: Canvas = new Canvas(FieldParams)
+  private instance = new Canvas(FieldParams)
   private drawer = new Drawer(this.instance.ctx)
   private backgroundGrid = new BackgroundGrid('field')
   private ships: Ship[] = []
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
   private offset = new Point()
-  private grid: number[][] = Utils.getDefaultGrid()
+  private grid = Utils.getDefaultGrid()
   private shipsOnField: Ship[] = []
-  private areAllShipsOnField: boolean = false
+  private areAllShipsOnField = false
 
   constructor() {
     this.backgroundGrid.draw()
@@ -318,7 +318,7 @@ export default class Field implements IObserver {
   }
 
   private moveToStartPosition(ship: Ship): void {
-    if (ship?.id) {
+    if (ship.id) {
       const currentShipStartPosition = this.shipsStartPositions.get(ship.id)
 
       if (!currentShipStartPosition) return

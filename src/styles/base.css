@@ -119,7 +119,8 @@ button {
 
 #play-button:disabled,
 #reset-button:disabled,
-#undo-button:disabled {
+#undo-button:disabled,
+#over-button:disabled {
   background-color: #cacaca;
   cursor: unset;
 }
@@ -156,4 +157,9 @@ button {
 .notification--success {
   background-color: #effded;
   color: #2ea041;
+}
+
+.notification--info {
+  background-color: #b4caf5;
+  color: #2e4ca0;
 }

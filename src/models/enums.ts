@@ -20,4 +20,5 @@ export enum NotificationType {
   DEFAULT,
   ERROR,
   SUCCESS,
+  INFO,
 }

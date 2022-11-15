@@ -5,7 +5,7 @@ import Notification from '@/components/notifications/Notification'
 export default class Notifications {
   public static parentNode = 'notifications-container'
   private static size = 0
-  private static lifeTime = 2000
+  private static lifeTime = 2500
   private static notifications: Notification[] = []
 
   public static create({
@@ -24,7 +24,7 @@ export default class Notifications {
   private static delete(): void {
     if (!Notifications.size) return
 
-    const notification = Notifications.notifications.pop()
+    const notification = Notifications.notifications.shift()
     notification?.removeFrom(Notifications.parentNode)
     Notifications.size--
   }

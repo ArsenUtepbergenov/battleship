@@ -17,6 +17,7 @@ export default class Battleship {
     new Button({ id: 'reset-button', text: 'reset' }),
     new Button({ id: 'undo-button', text: 'undo' }),
   ]
+  private overButton = new Button({ id: 'over-button', text: 'over' })
 
   public run(): void {
     this.createShips()
@@ -36,6 +37,14 @@ export default class Battleship {
   private over(): void {
     this.setHandlers()
     this.controller.setState(GameState.OVER)
+    this.overButton.disable()
+    this.overButton.click = () => this.over()
+
+    Notifications.create({
+      text: Messages.GameIsOver,
+      type: NotificationType.INFO,
+      lifeTime: 4500,
+    })
   }
 
   private play(): void {
@@ -50,6 +59,8 @@ export default class Battleship {
 
     this.unsetControls()
     this.controller.setState(GameState.PLAY)
+    this.overButton.undisable()
+    this.overButton.click = () => this.over()
 
     Notifications.create({
       text: Messages.GameHasStarted,
@@ -61,11 +72,10 @@ export default class Battleship {
   private setControls(): void {
     this.setHandlers()
 
-    const overButton = new Button({ id: 'over-button', text: 'over' })
-    overButton.click = () => this.over()
+    this.overButton.disable()
 
     this.appendControls()
-    overButton.appendTo('controls')
+    this.overButton.appendTo('controls')
 
     this.attachControls()
   }
