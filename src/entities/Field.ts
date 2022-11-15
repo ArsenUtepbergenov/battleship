@@ -2,15 +2,16 @@ import { FieldRect } from './../models/index'
 import Canvas from '@/components/Canvas'
 import { Ship } from '@/entities/Ship'
 import { Config, Directions, FieldParams } from '@/models'
-import { Orientation } from '@/models/enums'
-import { IPoint } from '@/models/types'
+import { GameState, Orientation } from '@/models/enums'
+import { IObserver, IPoint, ISubject } from '@/models/types'
 import Utils from '@/utils'
 import BackgroundGrid from './BackgroundGrid'
 import Point from './Point'
+import GameController from '@/entities/GameController'
 
-export default class Field {
+export default class Field implements IObserver {
   private instance: Canvas = new Canvas(FieldParams)
-  private backgroundGrid = new BackgroundGrid()
+  private backgroundGrid = new BackgroundGrid('field')
   private ships: Ship[] = []
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
@@ -20,10 +21,26 @@ export default class Field {
   private areAllShipsOnField: boolean = false
 
   constructor() {
-    this.backgroundGrid.appendTo('field')
     this.backgroundGrid.draw()
     this.instance.appendTo('field')
-    this.setHandlers()
+  }
+
+  public update(subject: ISubject): void {
+    const isController = subject instanceof GameController
+
+    if (!isController) return
+
+    switch (subject.state) {
+      case GameState.START:
+        this.setHandlers()
+        break
+      case GameState.PLAY:
+        this.freeze()
+        break
+      case GameState.OVER:
+        this.unfreeze()
+        break
+    }
   }
 
   public freeze(): void {

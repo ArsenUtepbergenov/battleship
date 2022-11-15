@@ -144,3 +144,8 @@ button {
   background-color: #fdeded;
   color: #5f2120;
 }
+
+.notification--success {
+  background-color: #effded;
+  color: #2ea041;
+}

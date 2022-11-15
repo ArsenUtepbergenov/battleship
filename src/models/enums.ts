@@ -19,4 +19,5 @@ export enum Orientation {
 export enum NotificationType {
   DEFAULT,
   ERROR,
+  SUCCESS,
 }

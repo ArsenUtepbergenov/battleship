@@ -25,7 +25,7 @@ export type NotificationNode = Node & {
 }
 
 export const TypeShips = [
-  { amount: 2, type: Ships.TorpedoBoat },
+  { amount: 1, type: Ships.TorpedoBoat },
   // { amount: 3, type: Ships.Destroyer },
   // { amount: 2, type: Ships.Cruiser },
   // { amount: 1, type: Ships.Battleship },
@@ -92,5 +92,6 @@ export const Directions = [
 ]
 
 export const Messages = {
-  NotAllShipsError: 'Put all ships on the field!',
+  NotAllShipsOnField: 'Put all ships on the field!',
+  GameHasStarted: 'The game has started! Good luck!',
 }

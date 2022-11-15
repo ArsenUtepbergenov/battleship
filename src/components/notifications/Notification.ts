@@ -21,6 +21,9 @@ export default class Notification extends Element {
         case NotificationType.ERROR:
           this.setClassList(['notification--error'])
           break
+        case NotificationType.SUCCESS:
+          this.setClassList(['notification--success'])
+          break
       }
     } catch (error) {
       console.error(error)

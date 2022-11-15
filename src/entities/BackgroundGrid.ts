@@ -5,9 +5,10 @@ export default class BackgroundGrid {
   private canvas: Canvas
   private ctx: CanvasRenderingContext2D
 
-  constructor() {
+  constructor(parentNode?: string) {
     this.canvas = new Canvas(BackgroundGridParams)
     this.ctx = this.canvas.ctx
+    parentNode && this.appendTo(parentNode)
   }
 
   public appendTo(parentNode: string): void {

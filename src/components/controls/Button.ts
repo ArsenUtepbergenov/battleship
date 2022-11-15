@@ -1,4 +1,4 @@
-import Controller from '@/entities/GameController'
+import GameController from '@/entities/GameController'
 import { ButtonNode } from '@/models'
 import { GameState } from '@/models/enums'
 import { IObserver, ISubject } from '@/models/types'
@@ -20,7 +20,7 @@ export default class Button extends Element implements IObserver {
   }
 
   public update(subject: ISubject): void {
-    const isController = subject instanceof Controller
+    const isController = subject instanceof GameController
 
     if (!isController) return
 

@@ -18,27 +18,33 @@ export default class Battleship {
     this.createShips()
     this.putShipsToSpot()
     this.setControls()
+    this.controller.attach(this.field)
+    this.controller.attach(this.fightField)
+    this.controller.setState(GameState.START)
   }
 
   public over(): void {
-    this.field.reset()
-    this.fightField.reset()
     this.controller.setState(GameState.OVER)
   }
 
   public play(): void {
     if (!this.field.isReady) {
       Notifications.create({
-        text: Messages.NotAllShipsError,
+        text: Messages.NotAllShipsOnField,
         type: NotificationType.ERROR,
       })
 
       return
     }
 
-    this.field.freeze()
     this.unsetControls()
     this.controller.setState(GameState.PLAY)
+
+    Notifications.create({
+      text: Messages.GameHasStarted,
+      type: NotificationType.SUCCESS,
+      lifeTime: 3500,
+    })
   }
 
   public setControls(): void {
@@ -47,19 +53,13 @@ export default class Battleship {
     const undoButton = new Button({ id: 'undo-button', text: 'undo' })
 
     playButton.click = () => this.play()
-    resetButton.click = () => this.reset()
+    resetButton.click = () => this.field.reset()
     undoButton.click = () => this.field.undo()
 
     this.controls.push(playButton, resetButton, undoButton)
 
     this.appendControls()
     this.attachControls()
-  }
-
-  private reset(): void {
-    this.field.reset()
-    this.fightField.reset()
-    this.controller.setState(GameState.START)
   }
 
   private attachControls(): void {

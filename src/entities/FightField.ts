@@ -1,25 +1,57 @@
-import { IPoint } from '@/models/types'
-import Canvas from '@/components/Canvas'
-import { Config, FieldRect, FightFieldParams } from '@/models'
 import Utils from '@/utils'
+import Canvas from '@/components/Canvas'
 import BackgroundGrid from './BackgroundGrid'
+import GameController from '@/entities/GameController'
+import { IObserver, IPoint, ISubject } from '@/models/types'
+import { Config, FieldRect, FightFieldParams } from '@/models'
+import { GameState } from '@/models/enums'
 
-export default class FightField {
+export default class FightField implements IObserver {
   private instance: Canvas = new Canvas(FightFieldParams)
-  private backgroundGrid = new BackgroundGrid()
-  private shottedPositions: number[][] = Utils.getDefaultGrid()
+  private backgroundGrid = new BackgroundGrid('fight-field')
+  private shottedCells: number[][] = Utils.getDefaultGrid()
 
   constructor() {
-    this.backgroundGrid.appendTo('fight-field')
     this.backgroundGrid.draw()
     this.instance.appendTo('fight-field')
-    this.instance.setCursor('pointer')
-    this.setHandlers()
+  }
+
+  public update(subject: ISubject): void {
+    const isController = subject instanceof GameController
+
+    if (!isController) return
+
+    switch (subject.state) {
+      case GameState.PLAY:
+        this.instance.setCursor('pointer')
+        this.setHandlers()
+        break
+      case GameState.START:
+        this.instance.setCursor()
+        this.unsetHandlers()
+        break
+      case GameState.OVER:
+        this.reset()
+        break
+    }
   }
 
   public reset(): void {
     this.instance.clear()
-    this.shottedPositions = Utils.getDefaultGrid()
+    this.shottedCells = Utils.getDefaultGrid()
+    this.unsetHandlers()
+    this.instance.setCursor()
+  }
+
+  //TODO: is or are ?
+  public isAllCellsShotted(): boolean {
+    let result = true
+
+    this.shottedCells.forEach(row => {
+      if (row.some(el => el === 0)) result = false
+    })
+
+    return result
   }
 
   private setHandlers(): void {
@@ -45,9 +77,9 @@ export default class FightField {
   }
 
   private shoot({ x, y }: IPoint): void {
-    if (this.shottedPositions[y][x] === 1) return
+    if (this.shottedCells[y][x] === 1) return
 
-    this.shottedPositions[y][x] = 1
+    this.shottedCells[y][x] = 1
 
     this.drawShot({ x, y })
   }
