@@ -19,3 +19,13 @@ export interface IPoint {
   x: number
   y: number
 }
+
+export interface IFillCircle {
+  position: IPoint
+  radius: number
+  color?: string
+}
+
+export interface IFillRect extends IRect {
+  color?: string
+}

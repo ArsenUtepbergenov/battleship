@@ -1,16 +1,17 @@
-import { FieldRect } from './../models/index'
+import Utils from '@/utils'
+import Point from './Point'
+import Drawer from './Drawer'
 import Canvas from '@/components/Canvas'
+import BackgroundGrid from './BackgroundGrid'
+import GameController from '@/entities/GameController'
 import { Ship } from '@/entities/Ship'
-import { Config, Directions, FieldParams } from '@/models'
 import { GameState, Orientation } from '@/models/enums'
 import { IObserver, IPoint, ISubject } from '@/models/types'
-import Utils from '@/utils'
-import BackgroundGrid from './BackgroundGrid'
-import Point from './Point'
-import GameController from '@/entities/GameController'
+import { Config, Directions, FieldParams, FieldRect } from '@/models'
 
 export default class Field implements IObserver {
   private instance: Canvas = new Canvas(FieldParams)
+  private drawer = new Drawer(this.instance.ctx)
   private backgroundGrid = new BackgroundGrid('field')
   private ships: Ship[] = []
   private shipsStartPositions: Map<string, Point> = new Map()
@@ -83,9 +84,29 @@ export default class Field implements IObserver {
         this.removeShipFromField(lastShip)
         this.moveToStartPosition(lastShip)
         this.shipsStartPositions.delete(lastShip.id)
+        this.areAllShipsOnField = false
         this.offset = new Point()
       }
     }
+  }
+
+  public shoot({ x, y }: IPoint): void {
+    if (this.grid[y][x] === 1) return
+
+    this.grid[y][x] = -2
+
+    this.drawMissedShot({ x, y })
+  }
+
+  private drawMissedShot({ x, y }: IPoint): void {
+    this.drawer.fillCircle({
+      position: {
+        x: x * Config.cellSize + Config.halfCellSize,
+        y: y * Config.cellSize + Config.halfCellSize,
+      },
+      radius: 4,
+      color: Config.missedShotColor,
+    })
   }
 
   private removeShipFromField(ship: Ship): void {

@@ -12,7 +12,11 @@ export default class Battleship {
   private field = new Field()
   private fightField = new FightField()
   private ships: Ship[] = []
-  private controls: Button[] = []
+  private controls: Button[] = [
+    new Button({ id: 'play-button', text: 'play' }),
+    new Button({ id: 'reset-button', text: 'reset' }),
+    new Button({ id: 'undo-button', text: 'undo' }),
+  ]
 
   public run(): void {
     this.createShips()
@@ -23,11 +27,18 @@ export default class Battleship {
     this.controller.setState(GameState.START)
   }
 
-  public over(): void {
+  private setHandlers(): void {
+    this.controls[0].click = () => this.play()
+    this.controls[1].click = () => this.field.reset()
+    this.controls[2].click = () => this.field.undo()
+  }
+
+  private over(): void {
+    this.setHandlers()
     this.controller.setState(GameState.OVER)
   }
 
-  public play(): void {
+  private play(): void {
     if (!this.field.isReady) {
       Notifications.create({
         text: Messages.NotAllShipsOnField,
@@ -47,18 +58,15 @@ export default class Battleship {
     })
   }
 
-  public setControls(): void {
-    const playButton = new Button({ id: 'play-button', text: 'play' })
-    const resetButton = new Button({ id: 'reset-button', text: 'reset' })
-    const undoButton = new Button({ id: 'undo-button', text: 'undo' })
+  private setControls(): void {
+    this.setHandlers()
 
-    playButton.click = () => this.play()
-    resetButton.click = () => this.field.reset()
-    undoButton.click = () => this.field.undo()
-
-    this.controls.push(playButton, resetButton, undoButton)
+    const overButton = new Button({ id: 'over-button', text: 'over' })
+    overButton.click = () => this.over()
 
     this.appendControls()
+    overButton.appendTo('controls')
+
     this.attachControls()
   }
 

@@ -29,6 +29,7 @@ export default class Button extends Element implements IObserver {
         this.disable()
         break
       case GameState.START:
+      case GameState.OVER:
         this.undisable()
         break
     }

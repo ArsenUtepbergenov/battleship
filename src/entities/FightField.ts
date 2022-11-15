@@ -5,11 +5,13 @@ import GameController from '@/entities/GameController'
 import { IObserver, IPoint, ISubject } from '@/models/types'
 import { Config, FieldRect, FightFieldParams } from '@/models'
 import { GameState } from '@/models/enums'
+import Drawer from './Drawer'
 
 export default class FightField implements IObserver {
-  private instance: Canvas = new Canvas(FightFieldParams)
+  private instance = new Canvas(FightFieldParams)
+  private drawer = new Drawer(this.instance.ctx)
   private backgroundGrid = new BackgroundGrid('fight-field')
-  private shottedCells: number[][] = Utils.getDefaultGrid()
+  private shottedCells = Utils.getDefaultGrid()
 
   constructor() {
     this.backgroundGrid.draw()
@@ -43,8 +45,7 @@ export default class FightField implements IObserver {
     this.instance.setCursor()
   }
 
-  //TODO: is or are ?
-  public isAllCellsShotted(): boolean {
+  public areAllCellsShotted(): boolean {
     let result = true
 
     this.shottedCells.forEach(row => {
@@ -85,13 +86,13 @@ export default class FightField implements IObserver {
   }
 
   private drawShot({ x, y }: IPoint): void {
-    const ctx = this.instance.ctx
-    const _x = x * Config.cellSize + Config.cellSize / 2
-    const _y = y * Config.cellSize + Config.cellSize / 2
-
-    ctx.fillStyle = Config.successShotColor
-    ctx.beginPath()
-    ctx.arc(_x, _y, 10, 0, 2 * Math.PI)
-    ctx.fill()
+    this.drawer.fillCircle({
+      position: {
+        x: x * Config.cellSize + Config.halfCellSize,
+        y: y * Config.cellSize + Config.halfCellSize,
+      },
+      radius: 10,
+      color: Config.successShotColor,
+    })
   }
 }

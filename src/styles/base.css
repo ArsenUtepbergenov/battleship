@@ -97,6 +97,10 @@ button {
   background-color: lightcoral;
 }
 
+#over-button {
+  background-color: darkgoldenrod;
+}
+
 #undo-button:hover {
   background-color: #c96060;
 }
@@ -107,6 +111,10 @@ button {
 
 #play-button:hover {
   background-color: #5a9d30;
+}
+
+#over-button:hover {
+  background-color: #906a0a;
 }
 
 #play-button:disabled,
