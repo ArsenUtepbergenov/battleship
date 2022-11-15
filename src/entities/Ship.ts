@@ -35,7 +35,7 @@ export class Ship implements IRect {
   public w: number
   public h: number
   public size: number
-  public orientation: Orientation = Orientation.H
+  public orientation = Orientation.H
   private _id: string = ''
 
   constructor({ x = 0, y = 0, size = 1, id = '' }) {

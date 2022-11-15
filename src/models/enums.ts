@@ -1,6 +1,5 @@
 export enum GameState {
   START,
-  RUN,
   PLAY,
   OVER,
 }

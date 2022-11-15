@@ -7,9 +7,9 @@ export default abstract class Element {
     this.instance = document.createElement(nameElement)
   }
 
-  protected init({ id, defaultClassList }: Node): void {
+  protected init({ id, classList }: Node): void {
     id && this.instance.setAttribute('id', id)
-    defaultClassList?.length && this.setClassList(defaultClassList)
+    classList?.length && this.setClassList(classList)
   }
 
   public appendTo(parentNode: string): void {

@@ -1,16 +1,13 @@
 import { IPoint } from '@/models/types'
 import Canvas from '@/components/Canvas'
-import { Config, FightFieldParams } from '@/models'
-import Utilities from '@/utils'
+import { Config, FieldRect, FightFieldParams } from '@/models'
+import Utils from '@/utils'
 import BackgroundGrid from './BackgroundGrid'
-
-// default constants
-const fieldRect = { x: 0, y: 0, w: Config.size, h: Config.size }
 
 export default class FightField {
   private instance: Canvas = new Canvas(FightFieldParams)
   private backgroundGrid = new BackgroundGrid()
-  private shottedPositions: number[][] = Utilities.getDefaultGrid()
+  private shottedPositions: number[][] = Utils.getDefaultGrid()
 
   constructor() {
     this.backgroundGrid.appendTo('fight-field')
@@ -22,7 +19,7 @@ export default class FightField {
 
   public reset(): void {
     this.instance.clear()
-    this.shottedPositions = Utilities.getDefaultGrid()
+    this.shottedPositions = Utils.getDefaultGrid()
   }
 
   private setHandlers(): void {
@@ -35,13 +32,13 @@ export default class FightField {
 
   private setClick(): void {
     this.instance.click = event => {
-      Utilities.removeDefaultAction(event)
+      Utils.removeDefaultAction(event)
 
-      const position = Utilities.getMouseCoordinates(event)
-      const iX = Utilities.div(position.x, Config.cellSize)
-      const iY = Utilities.div(position.y, Config.cellSize)
+      const position = Utils.getMouseCoordinates(event)
+      const iX = Utils.div(position.x, Config.cellSize)
+      const iY = Utils.div(position.y, Config.cellSize)
 
-      if (!Utilities.checkCollisionPointToRect(position, fieldRect)) return
+      if (!Utils.checkCollisionPointToRect(position, FieldRect)) return
 
       this.shoot({ x: iX, y: iY })
     }

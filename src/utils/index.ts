@@ -1,7 +1,7 @@
 import { Config } from '@/models'
 import { IPoint, IRect } from '@/models/types'
 
-export default class Utilities {
+export default class Utils {
   public static div(numerator: number, denominator: number): number {
     return (numerator - (numerator % denominator)) / denominator
   }
@@ -74,5 +74,5 @@ export default class Utilities {
   }
 
   public static getDefaultGrid = () =>
-    Utilities.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
+    Utils.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
 }

@@ -2,7 +2,7 @@ import { NotificationType, Ships } from './enums'
 
 export type Node = {
   id?: string
-  defaultClassList?: string[]
+  classList?: string[]
 }
 
 export type CanvasNode = Node & {
@@ -44,6 +44,8 @@ export abstract class Config {
   static gridPositionsSize = Config.size / Config.cellSize
   static numberShips = TypeShips.reduce((a, prev) => a + prev.amount, 0)
 }
+
+export const FieldRect = { x: 0, y: 0, w: Config.size, h: Config.size }
 
 export type EventHandler = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
 

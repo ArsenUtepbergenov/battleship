@@ -47,13 +47,19 @@ export default class Battleship {
     const undoButton = new Button({ id: 'undo-button', text: 'undo' })
 
     playButton.click = () => this.play()
-    resetButton.click = () => this.field.reset()
+    resetButton.click = () => this.reset()
     undoButton.click = () => this.field.undo()
 
     this.controls.push(playButton, resetButton, undoButton)
 
     this.appendControls()
     this.attachControls()
+  }
+
+  private reset(): void {
+    this.field.reset()
+    this.fightField.reset()
+    this.controller.setState(GameState.START)
   }
 
   private attachControls(): void {

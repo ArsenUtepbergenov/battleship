@@ -5,14 +5,14 @@ import { IObserver, ISubject } from '@/models/types'
 import Element from '../Element'
 
 export default class Button extends Element implements IObserver {
-  constructor({ id, defaultClassList, text }: ButtonNode) {
+  constructor({ id, classList, text }: ButtonNode) {
     super('button')
-    this.init({ id, defaultClassList, text })
+    this.init({ id, classList, text })
   }
 
-  protected init({ id, defaultClassList, text = '' }: ButtonNode): void {
+  protected init({ id, classList, text = '' }: ButtonNode): void {
     try {
-      super.init({ id, defaultClassList })
+      super.init({ id, classList })
       this.instance.innerHTML = text
     } catch (error) {
       console.error(error)
@@ -20,8 +20,17 @@ export default class Button extends Element implements IObserver {
   }
 
   public update(subject: ISubject): void {
-    if (subject instanceof Controller && subject.state === GameState.PLAY) {
-      this.disable()
+    const isController = subject instanceof Controller
+
+    if (!isController) return
+
+    switch (subject.state) {
+      case GameState.PLAY:
+        this.disable()
+        break
+      case GameState.START:
+        this.undisable()
+        break
     }
   }
 }

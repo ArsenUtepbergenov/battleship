@@ -3,7 +3,7 @@ import { BackgroundGridParams, Config } from '@/models'
 
 export default class BackgroundGrid {
   private canvas: Canvas
-  private ctx: CanvasRenderingContext2D | null = null
+  private ctx: CanvasRenderingContext2D
 
   constructor() {
     this.canvas = new Canvas(BackgroundGridParams)
@@ -16,7 +16,6 @@ export default class BackgroundGrid {
 
   public draw(): void {
     const c = this.ctx
-    if (!c) return
 
     c.lineWidth = 2
     c.strokeStyle = Config.gridColor

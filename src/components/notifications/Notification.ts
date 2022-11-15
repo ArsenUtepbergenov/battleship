@@ -10,11 +10,11 @@ export default class Notification extends Element {
 
   protected init({
     text = '',
-    defaultClassList = ['notification'],
+    classList = ['notification'],
     type = NotificationType.DEFAULT,
   }: NotificationNode): void {
     try {
-      super.init({ defaultClassList })
+      super.init({ classList })
       this.instance.innerHTML = text
 
       switch (type) {

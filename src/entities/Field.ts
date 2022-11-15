@@ -1,9 +1,10 @@
+import { FieldRect } from './../models/index'
 import Canvas from '@/components/Canvas'
 import { Ship } from '@/entities/Ship'
 import { Config, Directions, FieldParams } from '@/models'
 import { Orientation } from '@/models/enums'
 import { IPoint } from '@/models/types'
-import Utilities from '@/utils'
+import Utils from '@/utils'
 import BackgroundGrid from './BackgroundGrid'
 import Point from './Point'
 
@@ -14,7 +15,7 @@ export default class Field {
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
   private offset = new Point()
-  private gridPositions: number[][] = Utilities.getDefaultGrid()
+  private grid: number[][] = Utils.getDefaultGrid()
   private shipsOnField: Ship[] = []
   private areAllShipsOnField: boolean = false
 
@@ -42,7 +43,7 @@ export default class Field {
 
   public reset(): void {
     this.resetCurrentShip()
-    this.gridPositions = Utilities.getDefaultGrid()
+    this.grid = Utils.getDefaultGrid()
     this.shipsOnField.forEach(ship => this.moveToStartPosition(ship))
     this.shipsOnField = []
     this.shipsStartPositions.clear()
@@ -71,8 +72,8 @@ export default class Field {
   }
 
   private removeShipFromField(ship: Ship): void {
-    const iX = Utilities.div(ship.x, Config.cellSize)
-    const iY = Utilities.div(ship.y, Config.cellSize)
+    const iX = Utils.div(ship.x, Config.cellSize)
+    const iY = Utils.div(ship.y, Config.cellSize)
     const isH = ship.orientation === Orientation.H
 
     for (let i = 0; i < ship.size; i++) {
@@ -80,13 +81,13 @@ export default class Field {
         y = iY
       isH ? (x += i) : (y += i)
 
-      this.gridPositions[y][x] = 0
+      this.grid[y][x] = 0
       if (!this.occupyAroundShip(y, x, -1, 0)) return
     }
 
     this.shipsOnField.forEach(ship => {
-      const iX = Utilities.div(ship.x, Config.cellSize)
-      const iY = Utilities.div(ship.y, Config.cellSize)
+      const iX = Utils.div(ship.x, Config.cellSize)
+      const iY = Utils.div(ship.y, Config.cellSize)
       const isH = ship.orientation === Orientation.H
 
       for (let i = 0; i < ship.size; i++) {
@@ -119,7 +120,7 @@ export default class Field {
 
   private showPointerCursorOverShip(position: IPoint): void {
     for (const ship of this.ships) {
-      if (Utilities.checkCollisionPointToRect(position, ship) && !this.isOnField(ship)) {
+      if (Utils.checkCollisionPointToRect(position, ship) && !this.isOnField(ship)) {
         this.instance.setCursor('pointer')
         break
       } else {
@@ -130,7 +131,7 @@ export default class Field {
 
   private setMouseMove(): void {
     this.instance.mouseMove = event => {
-      this.showPointerCursorOverShip(Utilities.getMouseCoordinates(event))
+      this.showPointerCursorOverShip(Utils.getMouseCoordinates(event))
 
       if (!this.currentShip) return
 
@@ -153,9 +154,9 @@ export default class Field {
 
   private setClick(): void {
     this.instance.click = event => {
-      Utilities.removeDefaultAction(event)
+      Utils.removeDefaultAction(event)
 
-      const position = Utilities.getMouseCoordinates(event)
+      const position = Utils.getMouseCoordinates(event)
       const client = new Point(event.clientX, event.clientY)
 
       !this.currentShip ? this.setCurrentShip(position, client) : this.putCurrentShip()
@@ -164,7 +165,7 @@ export default class Field {
 
   private setContextMenu(): void {
     this.instance.contextMenu = event => {
-      Utilities.removeDefaultAction(event)
+      Utils.removeDefaultAction(event)
       if (!this.currentShip) return
 
       this.currentShip.changeOrientation()
@@ -174,7 +175,7 @@ export default class Field {
 
   private setCurrentShip(position: IPoint, client: IPoint): void {
     for (const ship of this.ships) {
-      if (Utilities.checkCollisionPointToRect(position, ship)) {
+      if (Utils.checkCollisionPointToRect(position, ship)) {
         if (this.isOnField(ship)) return
 
         const { x, y } = (this.currentShip = ship)
@@ -190,16 +191,14 @@ export default class Field {
   private putCurrentShip(): void {
     if (!this.currentShip) return
 
-    const fieldRect = { x: 0, y: 0, w: Config.size, h: Config.size }
-
-    if (Utilities.isRectInsideRect(this.currentShip, fieldRect)) {
+    if (Utils.isRectInsideRect(this.currentShip, FieldRect)) {
       this.putShip(this.currentShip)
     }
   }
 
   private checkIntervalX(start: number, end: number, axis: number): boolean {
     while (start < end) {
-      if (this.gridPositions[axis][start] !== 0) return false
+      if (this.grid[axis][start] !== 0) return false
       start++
     }
 
@@ -208,7 +207,7 @@ export default class Field {
 
   private checkIntervalY(start: number, end: number, axis: number): boolean {
     while (start < end) {
-      if (this.gridPositions[start][axis] !== 0) return false
+      if (this.grid[start][axis] !== 0) return false
       start++
     }
 
@@ -228,7 +227,7 @@ export default class Field {
       let x = iX,
         y = iY
       isH ? (x += i) : (y += i)
-      this.gridPositions[y][x] = 1
+      this.grid[y][x] = 1
     }
 
     return true
@@ -236,16 +235,15 @@ export default class Field {
 
   private putShip(ship: Ship): void {
     const size = Config.cellSize
-    const iX = Utilities.div(ship.x, size)
-    const iY = Utilities.div(ship.y, size)
-    const isH = ship.orientation === Orientation.H
+    const iX = Utils.div(ship.x, size)
+    const iY = Utils.div(ship.y, size)
 
     if (!this.occupyShip(ship, iX, iY)) return
 
     for (let i = 0; i < ship.size; i++) {
       let x = iX,
         y = iY
-      isH ? (x += i) : (y += i)
+      ship.orientation === Orientation.H ? (x += i) : (y += i)
 
       if (!this.occupyAroundShip(y, x)) return
     }
@@ -260,12 +258,12 @@ export default class Field {
       for (const { c, r } of Directions) {
         const dx = x + c
         const dy = y + r
-        const grid = this.gridPositions
+        const grid = this.grid
         const boundX = dx > grid.length - 1 || dx < 0
         const boundY = dy > grid.length - 1 || dy < 0
 
         if (boundX || boundY) continue
-        if (grid[dy][dx] === from) this.gridPositions[dy][dx] = to
+        if (grid[dy][dx] === from) this.grid[dy][dx] = to
       }
 
       return true
