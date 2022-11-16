@@ -3,11 +3,9 @@ import { BackgroundGridParams, Config } from '@/models'
 
 export default class BackgroundGrid {
   private canvas: Canvas
-  private ctx: CanvasRenderingContext2D
 
   constructor(parentNode?: string) {
     this.canvas = new Canvas(BackgroundGridParams)
-    this.ctx = this.canvas.ctx
     parentNode && this.appendTo(parentNode)
   }
 
@@ -16,7 +14,7 @@ export default class BackgroundGrid {
   }
 
   public draw(): void {
-    const c = this.ctx
+    const c = this.canvas.ctx
 
     c.lineWidth = 2
     c.strokeStyle = Config.gridColor
@@ -24,14 +22,14 @@ export default class BackgroundGrid {
     for (let x = 1; x < Config.cells; x++) {
       c.beginPath()
       c.moveTo(x * Config.cellSize, 0)
-      c.lineTo(x * Config.cellSize, Config.cellSize * Config.cells)
+      c.lineTo(x * Config.cellSize, Config.size)
       c.stroke()
     }
 
     for (let y = 1; y < Config.cells; y++) {
       c.beginPath()
       c.moveTo(0, y * Config.cellSize)
-      c.lineTo(Config.cellSize * Config.cells, y * Config.cellSize)
+      c.lineTo(Config.size, y * Config.cellSize)
       c.stroke()
     }
   }

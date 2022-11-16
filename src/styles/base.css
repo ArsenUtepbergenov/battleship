@@ -60,6 +60,8 @@ canvas {
   width: var(--grid-cell-size);
   line-height: var(--grid-cell-size);
   text-align: center;
+  user-select: none;
+  pointer-events: none;
 }
 
 #opponent-game,
