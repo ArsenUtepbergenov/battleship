@@ -127,13 +127,13 @@ button {
   cursor: unset;
 }
 
-#wrapper-notifications-container {
+#notifications-container {
   position: fixed;
   bottom: 20px;
   right: 40px;
 }
 
-#notifications-container {
+#notifications {
   display: flex;
   flex-direction: column;
 }

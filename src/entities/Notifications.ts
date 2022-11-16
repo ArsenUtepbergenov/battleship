@@ -3,7 +3,7 @@ import { NotificationType } from '@/models/enums'
 import Notification from '@/components/notifications/Notification'
 
 export default class Notifications {
-  public static parentNode = 'notifications-container'
+  public static parentNode = 'notifications'
   private static size = 0
   private static lifeTime = 2500
   private static notifications: Notification[] = []
