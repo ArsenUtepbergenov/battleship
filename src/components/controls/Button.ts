@@ -1,8 +1,8 @@
+import Element from '../Element'
 import GameController from '@/entities/GameController'
 import { ButtonNode } from '@/models'
 import { GameState } from '@/models/enums'
 import { IObserver, ISubject } from '@/models/types'
-import Element from '../Element'
 
 export default class Button extends Element implements IObserver {
   constructor({ id, classList, text }: ButtonNode) {

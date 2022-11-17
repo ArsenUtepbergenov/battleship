@@ -18,6 +18,11 @@ export type ButtonNode = Node & {
   text: string
 }
 
+export type TextInputNode = Node & {
+  value?: string
+  placeholder?: string
+}
+
 export type NotificationNode = Node & {
   text?: string
   type?: NotificationType
@@ -49,7 +54,8 @@ export abstract class Config {
 
 export const FieldRect = { x: 0, y: 0, w: Config.size, h: Config.size }
 
-export type EventHandler = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
+export type EventHandler = ((this: GlobalEventHandlers, ev: Event) => any) | null
+export type MouseEventHandler = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
 
 export type ShipParams = {
   x: number

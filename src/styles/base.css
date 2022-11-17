@@ -11,6 +11,10 @@ html, body {
   overflow-x: hidden;
 }
 
+#body {
+  padding: 0 60px;
+}
+
 canvas {
   outline: 2px solid var(--grid-color);
 }
@@ -19,7 +23,7 @@ canvas {
   font-family: monospace;
   box-sizing: border-box;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
 }
 
 #user-side {
@@ -164,4 +168,25 @@ button {
 .notification--info {
   background-color: #b4caf5;
   color: #2e4ca0;
+}
+
+#join-room-button {
+  background-color: #513786;
+}
+
+#join-room-button:hover {
+  background-color: #34215b;
+}
+
+input[type=text] {
+  padding: 10px 20px;
+  margin-right: 16px;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+  width: 210px;
+}
+
+#connection-settings {
+  display: flex;
+  align-items: center;
 }

@@ -1,4 +1,4 @@
-import { CanvasNode, EventHandler } from '@/models'
+import { CanvasNode, MouseEventHandler } from '@/models'
 import { IRect } from '@/models/types'
 
 export default class Canvas {
@@ -58,27 +58,27 @@ export default class Canvas {
     return this.instance.getBoundingClientRect()
   }
 
-  public set mouseDown(fn: EventHandler) {
+  public set mouseDown(fn: MouseEventHandler) {
     this.instance.onmousedown = fn
   }
 
-  public set mouseMove(fn: EventHandler) {
+  public set mouseMove(fn: MouseEventHandler) {
     this.instance.onmousemove = fn
   }
 
-  public set mouseUp(fn: EventHandler) {
+  public set mouseUp(fn: MouseEventHandler) {
     this.instance.onmouseup = fn
   }
 
-  public set mouseOut(fn: EventHandler) {
+  public set mouseOut(fn: MouseEventHandler) {
     this.instance.onmouseout = fn
   }
 
-  public set click(fn: EventHandler) {
+  public set click(fn: MouseEventHandler) {
     this.instance.onclick = fn
   }
 
-  public set contextMenu(fn: EventHandler) {
+  public set contextMenu(fn: MouseEventHandler) {
     this.instance.oncontextmenu = fn
   }
 }
