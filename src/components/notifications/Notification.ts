@@ -2,7 +2,7 @@ import Element from '../Element'
 import { NotificationNode } from '@/models'
 import { NotificationType } from '@/models/enums'
 
-export default class Notification extends Element {
+export default class Notification extends Element<HTMLSpanElement> {
   constructor({ text, type }: NotificationNode) {
     super('span')
     this.init({ text, type })

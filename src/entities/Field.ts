@@ -7,7 +7,8 @@ import GameController from '@/entities/GameController'
 import { Ship } from '@/entities/Ship'
 import { GameState, Orientation } from '@/models/enums'
 import { IObserver, IPoint, ISubject } from '@/models/types'
-import { Config, Directions, FieldParams, FieldRect } from '@/models'
+import { Directions, FieldParams, FieldRect } from '@/models'
+import { Config } from '@/config'
 
 export default class Field implements IObserver {
   private instance = new Canvas(FieldParams)

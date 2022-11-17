@@ -1,10 +1,10 @@
 import { Node, MouseEventHandler, EventHandler } from '@/models'
 
-export default abstract class Element {
-  protected instance: HTMLElement
+export default abstract class Element<InstanceType extends HTMLElement> {
+  protected instance: InstanceType
 
   constructor(nameElement: string) {
-    this.instance = document.createElement(nameElement)
+    this.instance = document.createElement(nameElement) as InstanceType
   }
 
   protected init({ id, classList }: Node): void {

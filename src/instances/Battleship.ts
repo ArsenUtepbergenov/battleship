@@ -8,18 +8,25 @@ import { GameState, NotificationType } from '@/models/enums'
 import FightField from '@/entities/FightField'
 
 export default class Battleship {
-  private controller = new GameController()
-  private field = new Field()
-  private fightField = new FightField()
-  private ships: Ship[] = []
-  private controls: Button[] = [
-    new Button({ id: 'play-button', text: 'play' }),
-    new Button({ id: 'reset-button', text: 'reset' }),
-    new Button({ id: 'undo-button', text: 'undo' }),
-  ]
-  private overButton = new Button({ id: 'over-button', text: 'over' })
+  private controller!: GameController
+  private field!: Field
+  private fightField!: FightField
+  private ships!: Ship[]
+  private controls!: Button[]
+  private overButton!: Button
 
   public run(): void {
+    this.controller = new GameController()
+    this.field = new Field()
+    this.fightField = new FightField()
+    this.ships = []
+    this.controls = [
+      new Button({ id: 'play-button', text: 'play' }),
+      new Button({ id: 'reset-button', text: 'reset' }),
+      new Button({ id: 'undo-button', text: 'undo' }),
+    ]
+    this.overButton = new Button({ id: 'over-button', text: 'over' })
+
     this.createShips()
     this.putShipsToSpot()
     this.setControls()

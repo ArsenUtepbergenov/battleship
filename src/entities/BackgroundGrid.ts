@@ -1,5 +1,6 @@
 import Canvas from '@/components/Canvas'
-import { BackgroundGridParams, Config } from '@/models'
+import { Config } from '@/config'
+import { BackgroundGridParams } from '@/models'
 
 export default class BackgroundGrid {
   private canvas: Canvas

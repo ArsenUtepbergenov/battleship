@@ -3,9 +3,10 @@ import Canvas from '@/components/Canvas'
 import BackgroundGrid from './BackgroundGrid'
 import GameController from '@/entities/GameController'
 import { IObserver, IPoint, ISubject } from '@/models/types'
-import { Config, FieldRect, FightFieldParams } from '@/models'
+import { FieldRect, FightFieldParams } from '@/models'
 import { GameState } from '@/models/enums'
 import Drawer from './Drawer'
+import { Config } from '@/config'
 
 export default class FightField implements IObserver {
   private instance = new Canvas(FightFieldParams)

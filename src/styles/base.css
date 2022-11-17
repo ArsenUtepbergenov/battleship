@@ -24,6 +24,13 @@ canvas {
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
+  margin: 30px 0;
+}
+
+.h {
+  color: #513786;
+  font-family: fantasy;
+  text-align: center;
 }
 
 #user-side {
@@ -189,4 +196,5 @@ input[type=text] {
 #connection-settings {
   display: flex;
   align-items: center;
+  justify-content: center;
 }

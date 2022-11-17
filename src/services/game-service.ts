@@ -5,8 +5,8 @@ class GameService {
     return new Promise((resolve, reject) => {
       socket.emit('join_game', { roomId })
 
-      socket.on('join_room', () => resolve(true))
-      socket.on('join_room_error', ({ error }) => reject(error))
+      socket.on('room_joined', () => resolve(true))
+      socket.on('room_joined_error', ({ error }) => reject(error))
     })
   }
 }

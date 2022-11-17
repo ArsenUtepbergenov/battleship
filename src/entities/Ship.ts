@@ -1,4 +1,5 @@
-import { Config, ShipParams, TypeShips } from '@/models'
+import { Config, TypeShips } from '@/config'
+import { ShipParams } from '@/models'
 import { Orientation } from '@/models/enums'
 import { IRect } from '@/models/types'
 

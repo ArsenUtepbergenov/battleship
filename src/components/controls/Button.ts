@@ -4,7 +4,7 @@ import { ButtonNode } from '@/models'
 import { GameState } from '@/models/enums'
 import { IObserver, ISubject } from '@/models/types'
 
-export default class Button extends Element implements IObserver {
+export default class Button extends Element<HTMLButtonElement> implements IObserver {
   constructor({ id, classList, text }: ButtonNode) {
     super('button')
     this.init({ id, classList, text })

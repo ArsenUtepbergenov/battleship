@@ -21,7 +21,7 @@ export class Room {
     const socketRooms = Array.from(socket.rooms.values()).filter(r => r !== socket.id)
 
     if (socketRooms.length || connectedSockets?.size === 2) {
-      socket.emit('join_room_error', {
+      socket.emit('room_joined_error', {
         error: 'The room is full! Please choose another room to play.',
       })
     } else {

@@ -1,7 +1,7 @@
 import Element from '../Element'
 import { TextInputNode } from '@/models'
 
-export default class TextInput extends Element {
+export default class TextInput extends Element<HTMLInputElement> {
   constructor({ id, classList, value, placeholder }: TextInputNode) {
     super('input')
     this.init({ id, classList, value, placeholder })
@@ -16,5 +16,14 @@ export default class TextInput extends Element {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  public clear(): void {
+    this.instance.setAttribute('value', '')
+    this.instance.value = ''
+  }
+
+  public setValue(value: string): void {
+    this.instance.setAttribute('value', value)
   }
 }
