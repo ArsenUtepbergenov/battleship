@@ -15,10 +15,10 @@ export abstract class Config {
   static cellSize = Math.floor(Config.size / Config.cells)
   static halfCellSize = Config.cellSize / 2
   static gridColor = '#a88213'
-  static shipColor = '#d1d1d1'
+  static shipColor = '#e4e4e4'
   static successShotColor = '#8bc34a'
   static missedShotColor = '#2196f3'
-  static failShotColor = '#f44336'
+  static failShotColor = '#ff4336'
   static shipSize = Config.cellSize
   static shipsSpotSize = Config.shipSize * 7
   static gridPositionsSize = Config.size / Config.cellSize

@@ -91,14 +91,26 @@ export default class Field implements IObserver {
   }
 
   public shoot({ x, y }: IPoint): void {
-    if (this.grid[y][x] === 1) return
+    if (this.grid[y][x] === 1) {
+      this.hit({ x, y })
+      this.grid[y][x] = 2
+      return
+    }
 
     this.grid[y][x] = -2
-
-    this.drawMissedShot({ x, y })
+    this.miss({ x, y })
   }
 
-  private drawMissedShot({ x, y }: IPoint): void {
+  private hit({ x, y }: IPoint): void {
+    this.drawer.drawCross({
+      x: x * Config.cellSize + Config.halfCellSize,
+      y: y * Config.cellSize + Config.halfCellSize,
+      offset: Config.cellSize / 3,
+      color: Config.failShotColor,
+    })
+  }
+
+  private miss({ x, y }: IPoint): void {
     this.drawer.fillCircle({
       position: {
         x: x * Config.cellSize + Config.halfCellSize,

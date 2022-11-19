@@ -29,3 +29,8 @@ export interface IFillCircle {
 export interface IFillRect extends IRect {
   color?: string
 }
+
+export interface IStrokeCross extends IPoint {
+  offset: number
+  color?: string
+}
