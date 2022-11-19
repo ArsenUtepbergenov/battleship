@@ -81,4 +81,5 @@ export const Messages = {
   NotAllShipsOnField: 'Put all ships on the field!',
   GameHasStarted: 'The game has started! Good luck!',
   GameIsOver: 'The game is over! Thanks for playing.',
+  TwoPlayersInRoom: 'The room has 2 players! You can start to play.',
 }

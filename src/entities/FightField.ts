@@ -7,6 +7,8 @@ import { FieldRect, FightFieldParams } from '@/models'
 import { GameState } from '@/models/enums'
 import Drawer from './Drawer'
 import { Config } from '@/config'
+import socketService from '@/services/socket-service'
+import gameService from '@/services/game-service'
 
 export default class FightField implements IObserver {
   private instance = new Canvas(FightFieldParams)
@@ -79,11 +81,15 @@ export default class FightField implements IObserver {
   }
 
   private shoot({ x, y }: IPoint): void {
+    if (!socketService.socket) return
     if (this.shottedCells[y][x] === 1) return
 
-    this.shottedCells[y][x] = 1
-
-    this.drawShot({ x, y })
+    if (!gameService.isPlayerTurn) {
+      this.shottedCells[y][x] = 1
+      gameService.updateGame(socketService.socket, { x, y })
+      this.drawShot({ x, y })
+      gameService.isPlayerTurn = true
+    }
   }
 
   private drawShot({ x, y }: IPoint): void {

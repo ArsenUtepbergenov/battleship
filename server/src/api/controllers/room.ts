@@ -20,13 +20,17 @@ export class Room {
     const connectedSockets = io.sockets.adapter.rooms.get(message.roomId)
     const socketRooms = Array.from(socket.rooms.values()).filter(r => r !== socket.id)
 
-    if (socketRooms.length || connectedSockets?.size === 2) {
+    if (socketRooms.length > 0 || connectedSockets?.size === 2) {
       socket.emit('room_joined_error', {
         error: 'The room is full! Please choose another room to play.',
       })
     } else {
       await socket.join(message.roomId)
       socket.emit('room_joined')
+
+      if (io.sockets.adapter.rooms.get(message.roomId).size === 2) {
+        io.in(message.roomId).emit('game_can_start')
+      }
     }
   }
 }
