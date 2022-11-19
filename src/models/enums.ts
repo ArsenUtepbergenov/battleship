@@ -12,11 +12,11 @@ export enum Ships {
 }
 
 export enum Orientation {
-  H = 'horizontal',
-  V = 'vertical',
+  Horizontal = 'horizontal',
+  Vertical = 'vertical',
 }
 
-export enum NotificationType {
+export enum ColorType {
   DEFAULT,
   ERROR,
   SUCCESS,

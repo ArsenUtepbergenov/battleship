@@ -1,5 +1,5 @@
 import { Config } from '@/config'
-import { NotificationType, Ships } from './enums'
+import { ColorType, Ships } from './enums'
 
 export type Node = {
   id?: string
@@ -26,7 +26,7 @@ export type TextInputNode = Node & {
 
 export type NotificationNode = Node & {
   text?: string
-  type?: NotificationType
+  type?: ColorType
   lifeTime?: number
 }
 

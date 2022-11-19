@@ -3,14 +3,18 @@ import { ShipParams } from '@/models'
 import { Orientation } from '@/models/enums'
 import { IRect } from '@/models/types'
 
+function createShip({ x, y, type, id }: ShipParams): Ship {
+  return new Ship({ x, y, size: type, id })
+}
+
 export function createShips(): Ship[] {
   const ships: Ship[] = []
   const size = Config.shipSize
 
-  const startX = Config.size + size / 2
+  const startX = Config.size + Config.halfCellSize
 
   const offsetX = size + 2
-  const offsetY = 36 * 2
+  const offsetY = size * 2
 
   for (const [i, ship] of TypeShips.entries()) {
     const { amount, type } = ship
@@ -26,17 +30,13 @@ export function createShips(): Ship[] {
   return ships
 }
 
-export function createShip({ x, y, type, id }: ShipParams): Ship {
-  return new Ship({ x, y, size: type, id })
-}
-
 export class Ship implements IRect {
   public x: number
   public y: number
   public w: number
   public h: number
   public size: number
-  public orientation = Orientation.H
+  public orientation = Orientation.Horizontal
   private _id: string = ''
 
   constructor({ x = 0, y = 0, size = 1, id = '' }) {
@@ -55,9 +55,10 @@ export class Ship implements IRect {
     ctx.fill()
   }
 
-  public changeOrientation(): void {
-    if (this.orientation === Orientation.H) this.orientation = Orientation.V
-    else if (this.orientation === Orientation.V) this.orientation = Orientation.H
+  public toggleOrientation(): void {
+    this.isHorizontal
+      ? (this.orientation = Orientation.Vertical)
+      : (this.orientation = Orientation.Horizontal)
     ;[this.w, this.h] = [this.h, this.w]
   }
 
@@ -68,5 +69,9 @@ export class Ship implements IRect {
 
   public get id(): string {
     return this._id
+  }
+
+  public get isHorizontal(): boolean {
+    return this.orientation === Orientation.Horizontal
   }
 }

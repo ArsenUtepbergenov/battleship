@@ -1,5 +1,5 @@
 import { NotificationNode } from '@/models'
-import { NotificationType } from '@/models/enums'
+import { ColorType } from '@/models/enums'
 import Notification from '@/components/notifications/Notification'
 
 export default class Notifications {
@@ -8,11 +8,7 @@ export default class Notifications {
   private static lifeTime = 2500
   private static notifications: Notification[] = []
 
-  public static create({
-    text = '',
-    type = NotificationType.DEFAULT,
-    lifeTime,
-  }: NotificationNode): void {
+  public static create({ text = '', type = ColorType.DEFAULT, lifeTime }: NotificationNode): void {
     const notification = new Notification({ text, type })
     notification.appendTo(Notifications.parentNode)
     Notifications.notifications.push(notification)

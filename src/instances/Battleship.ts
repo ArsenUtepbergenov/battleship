@@ -6,7 +6,7 @@ import Notifications from '@/entities/Notifications'
 import GameController from '@/entities/GameController'
 import { Messages } from '@/models'
 import { createShips, Ship } from '@/entities/Ship'
-import { GameState, NotificationType } from '@/models/enums'
+import { GameState, ColorType } from '@/models/enums'
 import FightField from '@/entities/FightField'
 import { IPoint } from '@/models/types'
 
@@ -52,7 +52,7 @@ export default class Battleship {
     const startCallback = () => {
       Notifications.create({
         text: Messages.TwoPlayersInRoom,
-        type: NotificationType.SUCCESS,
+        type: ColorType.SUCCESS,
         lifeTime: 3500,
       })
     }
@@ -76,7 +76,7 @@ export default class Battleship {
 
     Notifications.create({
       text: Messages.GameIsOver,
-      type: NotificationType.INFO,
+      type: ColorType.INFO,
       lifeTime: 4500,
     })
 
@@ -87,7 +87,7 @@ export default class Battleship {
     if (!this.field.isReady) {
       Notifications.create({
         text: Messages.NotAllShipsOnField,
-        type: NotificationType.ERROR,
+        type: ColorType.ERROR,
       })
 
       return
@@ -100,7 +100,7 @@ export default class Battleship {
 
     Notifications.create({
       text: Messages.GameHasStarted,
-      type: NotificationType.SUCCESS,
+      type: ColorType.SUCCESS,
       lifeTime: 3500,
     })
 

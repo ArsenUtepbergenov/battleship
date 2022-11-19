@@ -5,7 +5,7 @@ import Canvas from '@/components/Canvas'
 import BackgroundGrid from './BackgroundGrid'
 import GameController from '@/entities/GameController'
 import { Ship } from '@/entities/Ship'
-import { GameState, Orientation } from '@/models/enums'
+import { GameState } from '@/models/enums'
 import { IObserver, IPoint, ISubject } from '@/models/types'
 import { Directions, FieldParams, FieldRect } from '@/models'
 import { Config } from '@/config'
@@ -79,15 +79,14 @@ export default class Field implements IObserver {
   public undo(): void {
     if (this.shipsOnField.length) {
       const lastShip = this.shipsOnField.pop()
+      if (!lastShip) return
 
-      if (lastShip) {
-        this.resetCurrentShip()
-        this.removeShipFromField(lastShip)
-        this.moveToStartPosition(lastShip)
-        this.shipsStartPositions.delete(lastShip.id)
-        this.areAllShipsOnField = false
-        this.offset = new Point()
-      }
+      this.resetCurrentShip()
+      this.removeShipFromField(lastShip)
+      this.moveToStartPosition(lastShip)
+      this.shipsStartPositions.delete(lastShip.id)
+      this.areAllShipsOnField = false
+      this.offset = new Point()
     }
   }
 
@@ -113,12 +112,11 @@ export default class Field implements IObserver {
   private removeShipFromField(ship: Ship): void {
     const iX = Utils.div(ship.x, Config.cellSize)
     const iY = Utils.div(ship.y, Config.cellSize)
-    const isH = ship.orientation === Orientation.H
 
     for (let i = 0; i < ship.size; i++) {
       let x = iX,
         y = iY
-      isH ? (x += i) : (y += i)
+      ship.isHorizontal ? (x += i) : (y += i)
 
       this.grid[y][x] = 0
       if (!this.occupyAroundShip(y, x, -1, 0)) return
@@ -127,12 +125,11 @@ export default class Field implements IObserver {
     this.shipsOnField.forEach(ship => {
       const iX = Utils.div(ship.x, Config.cellSize)
       const iY = Utils.div(ship.y, Config.cellSize)
-      const isH = ship.orientation === Orientation.H
 
       for (let i = 0; i < ship.size; i++) {
         let x = iX,
           y = iY
-        isH ? (x += i) : (y += i)
+        ship.isHorizontal ? (x += i) : (y += i)
 
         if (!this.occupyAroundShip(y, x)) return
       }
@@ -207,7 +204,7 @@ export default class Field implements IObserver {
       Utils.removeDefaultAction(event)
       if (!this.currentShip) return
 
-      this.currentShip.changeOrientation()
+      this.currentShip.toggleOrientation()
       this.redrawShips()
     }
   }
@@ -222,7 +219,7 @@ export default class Field implements IObserver {
         if (!this.shipsStartPositions.has(this.currentShip.id))
           this.shipsStartPositions.set(this.currentShip.id, new Point(x, y))
 
-        this.offset.setPosition(client.x - x, client.y - y)
+        this.offset.set(client.x - x, client.y - y)
       }
     }
   }
@@ -254,7 +251,7 @@ export default class Field implements IObserver {
   }
 
   private occupyShip(ship: Ship, iX: number, iY: number): boolean {
-    const isH = ship.orientation === Orientation.H
+    const isH = ship.isHorizontal
 
     if (isH) {
       if (!this.checkIntervalX(iX, iX + ship.size, iY)) return false
@@ -282,7 +279,7 @@ export default class Field implements IObserver {
     for (let i = 0; i < ship.size; i++) {
       let x = iX,
         y = iY
-      ship.orientation === Orientation.H ? (x += i) : (y += i)
+      ship.isHorizontal ? (x += i) : (y += i)
 
       if (!this.occupyAroundShip(y, x)) return
     }
@@ -326,7 +323,7 @@ export default class Field implements IObserver {
 
       const { x, y } = currentShipStartPosition
 
-      if (ship.orientation === Orientation.V) ship.changeOrientation()
+      if (!ship.isHorizontal) ship.toggleOrientation()
 
       ship.setPosition(x, y)
       this.redrawShips()
