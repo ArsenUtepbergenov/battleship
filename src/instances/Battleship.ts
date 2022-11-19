@@ -9,17 +9,14 @@ import { createShips, Ship } from '@/entities/Ship'
 import { GameState, ColorType } from '@/models/enums'
 import FightField from '@/entities/FightField'
 import { IPoint } from '@/models/types'
+import { appendControls, Controls, getControl, unsetControls } from '@/components/controls/Controls'
 
 export default class Battleship {
   private controller = new GameController()
   private field!: Field
   private fightField!: FightField
   private ships: Ship[] = []
-  private controls: Button[] = [
-    new Button({ id: 'play-button', text: 'play' }),
-    new Button({ id: 'reset-button', text: 'reset' }),
-    new Button({ id: 'undo-button', text: 'undo' }),
-  ]
+  private controls = Controls
   private overButton = new Button({ id: 'over-button', text: 'surrender' })
 
   public run(): void {
@@ -31,7 +28,6 @@ export default class Battleship {
     this.controller.attach(this.field)
     this.controller.attach(this.fightField)
     this.controller.setState(GameState.START)
-
     this.handleGameStart()
   }
 
@@ -70,13 +66,17 @@ export default class Battleship {
   }
 
   private setHandlers(): void {
-    this.controls[0].click = () => this.play()
-    this.controls[1].click = () => this.field.reset()
-    this.controls[2].click = () => this.field.undo()
+    getControl('play').click = () => this.play()
+    getControl('reset').click = () => this.field.reset()
+    getControl('undo').click = () => this.field.undo()
+    document.onkeydown = event => {
+      if (event.code === 'Enter') this.play()
+      return true
+    }
   }
 
   private over(): void {
-    if (!socketService.socket) return
+    // if (!socketService.socket) return
 
     this.setHandlers()
     this.controller.setState(GameState.OVER)
@@ -89,7 +89,7 @@ export default class Battleship {
       lifeTime: 4500,
     })
 
-    gameService.stopGame(socketService.socket)
+    // gameService.stopGame(socketService.socket)
   }
 
   private play(): void {
@@ -121,7 +121,7 @@ export default class Battleship {
 
     this.overButton.disable()
 
-    this.appendControls()
+    appendControls('controls')
     this.overButton.appendTo('controls')
 
     this.attachControls()
@@ -131,12 +131,9 @@ export default class Battleship {
     this.controls.forEach(c => this.controller.attach(c))
   }
 
-  private appendControls(): void {
-    this.controls.forEach(c => c.appendTo('controls'))
-  }
-
   private unsetControls(): void {
-    this.controls.forEach(c => (c.click = null))
+    unsetControls()
+    document.onkeydown = null
   }
 
   private putShipsToSpot(): void {

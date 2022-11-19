@@ -34,6 +34,7 @@ export const FieldRect = { x: 0, y: 0, w: Config.size, h: Config.size }
 
 export type EventHandler = ((this: GlobalEventHandlers, ev: Event) => any) | null
 export type MouseEventHandler = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
+export type KeyboardEventHandler = ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null
 
 export type ShipParams = {
   x: number

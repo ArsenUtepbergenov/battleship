@@ -5,6 +5,10 @@ export default class GameController implements ISubject {
   public state: GameState = GameState.START
   private observers: IObserver[] = []
 
+  public get isPlaying(): boolean {
+    return this.state === GameState.PLAY
+  }
+
   public attach(observer: IObserver): void {
     try {
       const isExist = this.observers.includes(observer)

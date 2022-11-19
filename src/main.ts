@@ -25,4 +25,10 @@ function main() {
   }
 }
 
-main()
+function mainDev() {
+  const layout = new Layout().create()
+  const game = new Battleship().run()
+}
+
+// main()
+mainDev()
