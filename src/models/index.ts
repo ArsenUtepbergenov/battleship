@@ -9,6 +9,7 @@ export type Node = {
 export type CanvasNode = Node & {
   width: number
   height: number
+  outlineColor?: string
 }
 
 export type TextNode = Node & {
@@ -48,6 +49,7 @@ export const BackgroundGridParams = {
   id: 'grid',
   width: Config.size,
   height: Config.size,
+  outlineColor: Config.gridColor,
 }
 
 export const FightFieldParams = {
@@ -55,6 +57,7 @@ export const FightFieldParams = {
   id: 'opponent-game',
   width: Config.size + Config.shipsSpotSize,
   height: Config.size,
+  outlineColor: Config.gridColor,
 }
 
 export const FieldParams = {
@@ -62,6 +65,7 @@ export const FieldParams = {
   id: 'game',
   width: Config.size + Config.shipsSpotSize,
   height: Config.size,
+  outlineColor: Config.gridColor,
 }
 
 /**

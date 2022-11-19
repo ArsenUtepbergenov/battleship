@@ -19,6 +19,7 @@ export default class BackgroundGrid {
     const cells = Config.cells
 
     c.lineWidth = 2
+    c.setLineDash([2, 2])
     c.strokeStyle = Config.gridColor
 
     for (let x = 1; x < cells; x++) {

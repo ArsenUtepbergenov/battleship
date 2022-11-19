@@ -7,11 +7,11 @@ export default class Canvas {
   private context: CanvasRenderingContext2D
   private instance: HTMLCanvasElement
 
-  constructor({ id, width, height }: CanvasNode) {
+  constructor({ id, width, height, outlineColor }: CanvasNode) {
     this.instance = document.createElement('canvas')
     this.context = this.instance.getContext('2d')!
 
-    this.init({ id, width, height })
+    this.init({ id, width, height, outlineColor })
   }
 
   public appendTo(parentNode: string): void {
@@ -28,10 +28,11 @@ export default class Canvas {
     }
   }
 
-  private init({ id, width, height }: CanvasNode): void {
+  private init({ id, width, height, outlineColor = '' }: CanvasNode): void {
     try {
       id && this.instance.setAttribute('id', id)
       this.setSize(width, height)
+      this.instance.style.outlineColor = outlineColor
     } catch (error) {
       console.error(error)
     }

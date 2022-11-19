@@ -1,14 +1,20 @@
 :root {
-  --grid-color: darkslateblue;
   --field-size: 360px;
   --game-size: 648px;
   --grid-cell-size: 36px;
+  --text-color: #d1d1d1;
+  --play-button: #5e943c;
+  --reset-button: #413873;
+  --undo-button: #a45e5e;
+  --over-button: #735c26;
+  --join-color: #a93c34;
 }
 
 html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  background-color: #191c29;
 }
 
 #body {
@@ -16,7 +22,7 @@ html, body {
 }
 
 canvas {
-  outline: 2px solid var(--grid-color);
+  outline: 2px solid;
 }
 
 #app {
@@ -28,7 +34,7 @@ canvas {
 }
 
 .h {
-  color: #513786;
+  color: var(--text-color);
   font-family: fantasy;
   text-align: center;
 }
@@ -67,7 +73,7 @@ canvas {
 
 .axis-y, .axis-x span {
   font-size: 28px;
-  color: #505050;
+  color: var(--text-color);
   width: var(--grid-cell-size);
   line-height: var(--grid-cell-size);
   text-align: center;
@@ -91,7 +97,6 @@ button {
   font-size: 1em;
   margin-right: 16px;
   padding: 10px 22px;
-  border-radius: 3px;
   letter-spacing: 1px;
   color: white;
   cursor: pointer;
@@ -99,7 +104,7 @@ button {
 }
 
 #reset-button {
-  background-color: darkslateblue;
+  background-color: var(--reset-button);
 }
 
 #reset-button:hover {
@@ -107,11 +112,7 @@ button {
 }
 
 #undo-button {
-  background-color: lightcoral;
-}
-
-#over-button {
-  background-color: darkgoldenrod;
+  background-color: var(--undo-button);;
 }
 
 #undo-button:hover {
@@ -119,11 +120,15 @@ button {
 }
 
 #play-button {
-  background-color: #6fbb40;
+  background-color: var(--play-button);
 }
 
 #play-button:hover {
   background-color: #5a9d30;
+}
+
+#over-button {
+  background-color: var(--over-button);
 }
 
 #over-button:hover {
@@ -134,7 +139,7 @@ button {
 #reset-button:disabled,
 #undo-button:disabled,
 #over-button:disabled {
-  background-color: #cacaca;
+  background-color: transparent;
   cursor: unset;
 }
 
@@ -178,18 +183,18 @@ button {
 }
 
 #join-room-button {
-  background-color: #513786;
+  background-color: var(--join-color);
 }
 
 #join-room-button:hover {
-  background-color: #34215b;
+  background-color: #7e2f2a;
 }
 
 input[type=text] {
-  padding: 10px 20px;
+  padding: 11px 20px;
   margin-right: 16px;
-  border: 2px solid #ccc;
-  border-radius: 3px;
+  border: 0;
+  outline: 0;
   width: 210px;
 }
 
