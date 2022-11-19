@@ -5,13 +5,22 @@ import { Socket } from 'socket.io'
 export class Game {
   private getSocketGameRoom(socket: Socket): string {
     const socketRooms = Array.from(socket.rooms.values()).filter(r => r !== socket.id)
-    const gameRoom = socketRooms?.length && socketRooms[0]
+    const room = socketRooms?.length && socketRooms[0]
 
-    return gameRoom
+    return room
   }
 
   @OnMessage('update_game')
   public async updateGame(@ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-    socket.to(this.getSocketGameRoom(socket)).emit('on_game_update', message)
+    const room = this.getSocketGameRoom(socket)
+
+    socket.to(room).emit('on_game_update', message)
+  }
+
+  @OnMessage('stop_game')
+  public async stopGame(@ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+    const room = this.getSocketGameRoom(socket)
+
+    socket.to(room).emit('on_game_stop', message)
   }
 }

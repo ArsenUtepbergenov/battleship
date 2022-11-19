@@ -28,8 +28,13 @@ class GameService {
   }
 
   // stop
-  public async stopUpdateGame(socket: Socket) {
+  public async stopGame(socket: Socket) {
     socket.removeAllListeners('on_game_update')
+    socket.emit('stop_game')
+  }
+
+  public async onGameStop(socket: Socket, listener: () => void) {
+    socket.on('on_game_stop', listener)
   }
 }
 

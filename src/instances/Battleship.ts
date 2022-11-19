@@ -20,7 +20,7 @@ export default class Battleship {
     new Button({ id: 'reset-button', text: 'reset' }),
     new Button({ id: 'undo-button', text: 'undo' }),
   ]
-  private overButton = new Button({ id: 'over-button', text: 'over' })
+  private overButton = new Button({ id: 'over-button', text: 'surrender' })
 
   public run(): void {
     this.field = new Field()
@@ -57,7 +57,16 @@ export default class Battleship {
       })
     }
 
+    const stopCallback = () => {
+      Notifications.create({
+        text: Messages.PlayerSurrendered,
+        type: ColorType.INFO,
+        lifeTime: 3500,
+      })
+    }
+
     gameService.onStartGame(socketService.socket, startCallback)
+    gameService.onGameStop(socketService.socket, stopCallback)
   }
 
   private setHandlers(): void {
@@ -80,7 +89,7 @@ export default class Battleship {
       lifeTime: 4500,
     })
 
-    gameService.stopUpdateGame(socketService.socket)
+    gameService.stopGame(socketService.socket)
   }
 
   private play(): void {
