@@ -1,14 +1,15 @@
 import Utils from '@/utils'
+import Drawer from './Drawer'
 import Canvas from '@/components/Canvas'
 import BackgroundGrid from './BackgroundGrid'
-import GameController from '@/entities/GameController'
-import { IObserver, IPoint, ISubject } from '@/models/types'
-import { FieldRect, FightFieldParams } from '@/models'
-import { GameState } from '@/models/enums'
-import Drawer from './Drawer'
-import { Config } from '@/config'
-import socketService from '@/services/socket-service'
 import gameService from '@/services/game-service'
+import socketService from '@/services/socket-service'
+import GameController from '@/entities/GameController'
+import { Config } from '@/config'
+import { GameState } from '@/models/enums'
+import { notify } from '@/entities/Notifications'
+import { FieldRect, FightFieldParams } from '@/models'
+import { IObserver, IPoint, ISubject } from '@/models/types'
 
 export default class FightField implements IObserver {
   private instance = new Canvas(FightFieldParams)
@@ -82,6 +83,11 @@ export default class FightField implements IObserver {
 
   private shoot({ x, y }: IPoint): void {
     if (!socketService.socket) return
+    if (!gameService.canPlay) {
+      notify('PlayerIsNotReady')
+
+      return
+    }
     if (this.shottedCells[y][x] === 1) return
 
     if (!gameService.isPlayerTurn) {

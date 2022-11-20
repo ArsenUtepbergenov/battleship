@@ -29,7 +29,7 @@ export class Room {
       socket.emit('room_joined')
 
       if (io.sockets.adapter.rooms.get(message.roomId).size === 2) {
-        io.in(message.roomId).emit('game_can_start')
+        io.in(message.roomId).emit('two_players')
       }
     }
   }

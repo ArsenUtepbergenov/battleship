@@ -2,7 +2,14 @@ import { IPoint } from '@/models/types'
 import { Socket } from 'socket.io-client'
 
 class GameService {
+  public twoPlayersInRoom = false
   public isPlayerTurn = false
+  public canPlay = false
+
+  public reset(): void {
+    this.canPlay = false
+    this.isPlayerTurn = false
+  }
 
   public async joinGameRoom(socket: Socket, roomId: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -13,9 +20,23 @@ class GameService {
     })
   }
 
-  // start
-  public async onStartGame(socket: Socket, listener: () => void) {
-    socket.on('game_can_start', listener)
+  // start/play
+  public async playGame(socket: Socket) {
+    socket.emit('play_game')
+  }
+
+  public async onGamePlay(socket: Socket, listener: () => void) {
+    socket.on('on_game_play', () => {
+      this.canPlay = true
+      listener()
+    })
+  }
+
+  public async onTwoPlayersJoined(socket: Socket, listener: () => void) {
+    socket.on('two_players', () => {
+      this.twoPlayersInRoom = true
+      listener()
+    })
   }
 
   // update
@@ -29,6 +50,7 @@ class GameService {
 
   // stop
   public async stopGame(socket: Socket) {
+    this.reset()
     socket.removeAllListeners('on_game_update')
     socket.emit('stop_game')
   }

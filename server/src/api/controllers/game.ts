@@ -13,14 +13,18 @@ export class Game {
   @OnMessage('update_game')
   public async updateGame(@ConnectedSocket() socket: Socket, @MessageBody() message: any) {
     const room = this.getSocketGameRoom(socket)
-
     socket.to(room).emit('on_game_update', message)
   }
 
   @OnMessage('stop_game')
-  public async stopGame(@ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+  public async stopGame(@ConnectedSocket() socket: Socket) {
     const room = this.getSocketGameRoom(socket)
+    socket.to(room).emit('on_game_stop')
+  }
 
-    socket.to(room).emit('on_game_stop', message)
+  @OnMessage('play_game')
+  public async playGame(@ConnectedSocket() socket: Socket) {
+    const room = this.getSocketGameRoom(socket)
+    socket.broadcast.to(room).emit('on_game_play')
   }
 }

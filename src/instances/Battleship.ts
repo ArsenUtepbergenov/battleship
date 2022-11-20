@@ -1,14 +1,13 @@
-import gameService from '@/services/game-service'
-import socketService from '@/services/socket-service'
 import Field from '@/entities/Field'
-import Button from '@/components/controls/Button'
-import Notifications from '@/entities/Notifications'
-import GameController from '@/entities/GameController'
-import { Messages } from '@/models'
-import { createShips, Ship } from '@/entities/Ship'
-import { GameState, ColorType } from '@/models/enums'
 import FightField from '@/entities/FightField'
+import gameService from '@/services/game-service'
+import Button from '@/components/controls/Button'
+import socketService from '@/services/socket-service'
+import GameController from '@/entities/GameController'
 import { IPoint } from '@/models/types'
+import { GameState } from '@/models/enums'
+import { notify } from '@/entities/Notifications'
+import { createShips, Ship } from '@/entities/Ship'
 import { appendControls, Controls, getControl, unsetControls } from '@/components/controls/Controls'
 
 export default class Battleship {
@@ -34,35 +33,63 @@ export default class Battleship {
   public handleGameUpdate(): void {
     if (!socketService.socket) return
 
-    const shootCallback = (position: IPoint) => {
+    const shoot = (position: IPoint) => {
       this.field.shoot(position)
       gameService.isPlayerTurn = false
     }
 
-    gameService.onGameUpdate(socketService.socket, shootCallback)
+    gameService.onGameUpdate(socketService.socket, shoot)
   }
 
   public handleGameStart(): void {
     if (!socketService.socket) return
 
-    const startCallback = () => {
-      Notifications.create({
-        text: Messages.TwoPlayersInRoom,
-        type: ColorType.SUCCESS,
-        lifeTime: 3500,
-      })
-    }
+    gameService.onGamePlay(socketService.socket, () => notify('PlayerPlaying'))
+    gameService.onTwoPlayersJoined(socketService.socket, () => notify('TwoPlayersInRoom'))
+    gameService.onGameStop(socketService.socket, () => {
+      notify('PlayerSurrendered')
+      this.reset()
+      gameService.reset()
+    })
+  }
 
-    const stopCallback = () => {
-      Notifications.create({
-        text: Messages.PlayerSurrendered,
-        type: ColorType.INFO,
-        lifeTime: 3500,
-      })
-    }
+  private over(): void {
+    if (!socketService.socket) return
 
-    gameService.onStartGame(socketService.socket, startCallback)
-    gameService.onGameStop(socketService.socket, stopCallback)
+    this.reset()
+    gameService.stopGame(socketService.socket)
+    notify('GameIsOver')
+  }
+
+  private play(): void {
+    if (!this.canPlay || !socketService.socket) return
+
+    this.unsetControls()
+    this.controller.setState(GameState.PLAY)
+    this.overButton.undisable()
+    this.overButton.click = () => this.over()
+
+    this.handleGameUpdate()
+    gameService.playGame(socketService.socket)
+  }
+
+  private reset(): void {
+    this.setHandlers()
+    this.controller.setState(GameState.OVER)
+    this.overButton.disable()
+    this.overButton.click = null
+  }
+
+  private get canPlay(): boolean {
+    if (!this.field.isReady) {
+      notify('NotAllShipsOnField')
+      return false
+    }
+    if (!gameService.twoPlayersInRoom) {
+      notify('NoTwoPlayersInRoom')
+      return false
+    }
+    return true
   }
 
   private setHandlers(): void {
@@ -73,47 +100,6 @@ export default class Battleship {
       if (event.code === 'Enter') this.play()
       return true
     }
-  }
-
-  private over(): void {
-    // if (!socketService.socket) return
-
-    this.setHandlers()
-    this.controller.setState(GameState.OVER)
-    this.overButton.disable()
-    this.overButton.click = null
-
-    Notifications.create({
-      text: Messages.GameIsOver,
-      type: ColorType.INFO,
-      lifeTime: 4500,
-    })
-
-    // gameService.stopGame(socketService.socket)
-  }
-
-  private play(): void {
-    if (!this.field.isReady) {
-      Notifications.create({
-        text: Messages.NotAllShipsOnField,
-        type: ColorType.ERROR,
-      })
-
-      return
-    }
-
-    this.unsetControls()
-    this.controller.setState(GameState.PLAY)
-    this.overButton.undisable()
-    this.overButton.click = () => this.over()
-
-    Notifications.create({
-      text: Messages.GameHasStarted,
-      type: ColorType.SUCCESS,
-      lifeTime: 3500,
-    })
-
-    this.handleGameUpdate()
   }
 
   private setControls(): void {
