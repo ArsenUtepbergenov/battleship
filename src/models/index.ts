@@ -90,7 +90,7 @@ export const Messages = {
   NoTwoPlayersInRoom: 'You don not have an opponent!',
   PlayerPlaying: 'Your opponent has started playing.',
   PlayerIsNotReady: 'Your opponent is not ready.',
-  PlayerSurrendered: 'Your opponent has surrendered! Congratulations!',
+  PlayerWon: 'Congratulations! You have won!',
   NotYourMove: 'It is not your move now.',
   YouHitOpponent: 'Nice! You have hit opponent!',
 }

@@ -33,30 +33,29 @@ export default class Battleship {
     this.handleGameStart()
   }
 
-  public handleGameUpdate(): void {
-    if (!this.ws) return
-
-    gameService.onGameUpdate(this.ws, (position: IPoint) => this.field.shoot(position))
-    gameService.onPlayerMoveId(this.ws)
-  }
-
-  public handleGameStart(): void {
+  private handleGameStart(): void {
     if (!this.ws) return
 
     gameService.onGamePlay(this.ws, () => notify('PlayerPlaying'))
     gameService.onTwoPlayersJoined(this.ws, () => notify('TwoPlayersInRoom'))
-    gameService.onGameStop(this.ws, () => {
-      notify('PlayerSurrendered')
-      this.reset()
-      gameService.reset()
+    gameService.onGameStop(this.ws, (winnerId: string) => {
+      if (!this.ws) return
+
+      if (this.ws.id === winnerId) {
+        this.reset()
+        notify('PlayerWon')
+        return
+      }
+      this.over()
     })
+    gameService.onPlayerMoveId(this.ws)
+    gameService.onGameUpdate(this.ws, (position: IPoint) => this.field.shoot(position))
   }
 
   private over(): void {
     if (!this.ws) return
 
     this.reset()
-    gameService.stopGame(this.ws)
     notify('GameIsOver')
   }
 
@@ -68,7 +67,6 @@ export default class Battleship {
     this.overButton.undisable()
     this.overButton.click = () => this.over()
 
-    this.handleGameUpdate()
     gameService.playGame(this.ws)
   }
 

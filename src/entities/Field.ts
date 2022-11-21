@@ -23,6 +23,7 @@ export default class Field implements IObserver {
   private grid = Utils.getDefaultGrid()
   private shipsOnField: Ship[] = []
   private areAllShipsOnField = false
+  private numberLiveShipCells = 0
 
   constructor() {
     this.backgroundGrid.draw()
@@ -50,6 +51,7 @@ export default class Field implements IObserver {
   public freeze(): void {
     if (!this.isReady) return
 
+    this.numberLiveShipCells = Config.numberShipCells
     this.unsetHandlers()
   }
 
@@ -71,6 +73,7 @@ export default class Field implements IObserver {
     this.offset = new Point()
     this.areAllShipsOnField = false
     this.redrawShips()
+    this.numberLiveShipCells = Config.numberShipCells
   }
 
   public setShips(ships: Ship[]): void {
@@ -100,12 +103,14 @@ export default class Field implements IObserver {
       this.grid[y][x] = 2
       this.drawHit({ x, y })
       isHit = true
+      this.numberLiveShipCells--
     } else {
       this.grid[y][x] = -2
       this.drawMiss({ x, y })
     }
 
     gameService.hit(socketService.socket, isHit)
+    if (this.numberLiveShipCells <= 0) gameService.stopGame(socketService.socket)
   }
 
   private drawHit({ x, y }: IPoint): void {

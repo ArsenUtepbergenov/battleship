@@ -11,7 +11,6 @@ import { GameState } from '@/models/enums'
 import { notify } from '@/entities/Notifications'
 import { FieldRect, FightFieldParams } from '@/models'
 import { IObserver, IPoint, ISubject } from '@/models/types'
-import Point from './Point'
 
 export default class FightField implements IObserver {
   private instance = new Canvas(FightFieldParams)
@@ -19,7 +18,7 @@ export default class FightField implements IObserver {
   private backgroundGrid = new BackgroundGrid('fight-field')
   private shottedCells = Utils.getDefaultGrid()
   private ws: Socket | null
-  private currentShot: IPoint = new Point(0, 0)
+  private currentShot: IPoint | null = null
 
   constructor() {
     this.backgroundGrid.draw()
@@ -54,6 +53,7 @@ export default class FightField implements IObserver {
     this.shottedCells = Utils.getDefaultGrid()
     this.unsetHandlers()
     this.instance.setCursor()
+    this.currentShot = null
   }
 
   public areAllCellsShotted(): boolean {
@@ -71,7 +71,7 @@ export default class FightField implements IObserver {
 
     gameService.onHit(this.ws, (isHit: boolean) => {
       if (isHit) notify('YouHitOpponent')
-      this.drawShot(this.currentShot, isHit)
+      this.drawShot(this.currentShot!, isHit)
     })
   }
 

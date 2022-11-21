@@ -27,17 +27,17 @@ export default class Notifications {
 }
 
 const notifications = {
-  PlayerSurrendered: () =>
+  PlayerWon: () =>
     Notifications.create({
-      text: Messages.PlayerSurrendered,
+      text: Messages.PlayerWon,
       type: ColorType.SUCCESS,
-      lifeTime: 3500,
+      lifeTime: 5500,
     }),
   GameIsOver: () =>
     Notifications.create({
       text: Messages.GameIsOver,
       type: ColorType.ERROR,
-      lifeTime: 4500,
+      lifeTime: 5500,
     }),
   PlayerPlaying: () =>
     Notifications.create({

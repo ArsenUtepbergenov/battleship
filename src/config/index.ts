@@ -3,8 +3,8 @@ import { Ships } from '@/models/enums'
 export const URL = 'http://localhost:9000'
 
 export const TypeShips = [
-  { amount: 1, type: Ships.TorpedoBoat },
-  // { amount: 3, type: Ships.Destroyer },
+  // { amount: 1, type: Ships.TorpedoBoat },
+  { amount: 1, type: Ships.Destroyer },
   // { amount: 2, type: Ships.Cruiser },
   // { amount: 1, type: Ships.Battleship },
 ]
@@ -23,4 +23,5 @@ export abstract class Config {
   static shipsSpotSize = Config.shipSize * 7
   static gridPositionsSize = Config.size / Config.cellSize
   static numberShips = TypeShips.reduce((a, prev) => a + prev.amount, 0)
+  static numberShipCells = TypeShips.reduce((a, prev) => a + prev.amount * prev.type, 0)
 }

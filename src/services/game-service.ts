@@ -27,7 +27,6 @@ class GameService {
 
   public async onGamePlay(socket: Socket, listener: () => void) {
     socket.on('on_game_play', () => {
-      if (!this.movingPlayerId) this.movingPlayerId = socket.id
       this.canPlay = true
       listener()
     })
@@ -46,7 +45,7 @@ class GameService {
   }
 
   public async onHit(socket: Socket, listener: (isHit: boolean) => void) {
-    socket.on('on_hit', isHit => listener(isHit))
+    socket.on('on_hit', listener)
   }
 
   public async onPlayerMoveId(socket: Socket) {
@@ -64,11 +63,10 @@ class GameService {
   // stop
   public async stopGame(socket: Socket) {
     this.reset()
-    socket.removeAllListeners('on_game_update')
     socket.emit('stop_game')
   }
 
-  public async onGameStop(socket: Socket, listener: () => void) {
+  public async onGameStop(socket: Socket, listener: (id: string) => void) {
     socket.on('on_game_stop', listener)
   }
 }

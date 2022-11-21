@@ -25,6 +25,7 @@ export class Game {
     @MessageBody() isHit: boolean,
   ) {
     const room = this.getSocketGameRoom(socket)
+
     if (!isHit) this.movingPlayerId = socket.id
 
     io.in(room).emit('on_player_move_id', this.movingPlayerId)
@@ -34,18 +35,28 @@ export class Game {
   @OnMessage('update_game')
   public async updateGame(@ConnectedSocket() socket: Socket, @MessageBody() position: any) {
     const room = this.getSocketGameRoom(socket)
+
     socket.to(room).emit('on_game_update', position)
   }
 
   @OnMessage('stop_game')
-  public async stopGame(@ConnectedSocket() socket: Socket) {
+  public async stopGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
     const room = this.getSocketGameRoom(socket)
-    socket.to(room).emit('on_game_stop')
+
+    io.in(room).emit('on_game_stop', this.movingPlayerId)
+    this.movingPlayerId = ''
+    io.in(room).emit('on_player_move_id', this.movingPlayerId)
   }
 
   @OnMessage('play_game')
-  public async playGame(@ConnectedSocket() socket: Socket) {
+  public async playGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
     const room = this.getSocketGameRoom(socket)
-    socket.broadcast.to(room).emit('on_game_play')
+
+    if (!this.movingPlayerId) {
+      this.movingPlayerId = socket.id
+      io.in(room).emit('on_player_move_id', this.movingPlayerId)
+    }
+
+    socket.to(room).emit('on_game_play')
   }
 }
