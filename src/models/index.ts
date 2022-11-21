@@ -91,4 +91,6 @@ export const Messages = {
   PlayerPlaying: 'Your opponent has started playing.',
   PlayerIsNotReady: 'Your opponent is not ready.',
   PlayerSurrendered: 'Your opponent has surrendered! Congratulations!',
+  NotYourMove: 'It is not your move now.',
+  YouHitOpponent: 'Nice! You have hit opponent!',
 }

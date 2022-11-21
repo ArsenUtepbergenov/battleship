@@ -66,6 +66,16 @@ const notifications = {
       text: Messages.PlayerIsNotReady,
       type: ColorType.ERROR,
     }),
+  NotYourMove: () =>
+    Notifications.create({
+      text: Messages.NotYourMove,
+      type: ColorType.ERROR,
+    }),
+  YouHitOpponent: () =>
+    Notifications.create({
+      text: Messages.YouHitOpponent,
+      type: ColorType.SUCCESS,
+    }),
 }
 
 export function notify(message: string) {

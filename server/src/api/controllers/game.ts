@@ -1,8 +1,16 @@
-import { ConnectedSocket, MessageBody, OnMessage, SocketController } from 'socket-controllers'
-import { Socket } from 'socket.io'
+import {
+  ConnectedSocket,
+  MessageBody,
+  OnMessage,
+  SocketController,
+  SocketIO,
+} from 'socket-controllers'
+import { Server, Socket } from 'socket.io'
 
 @SocketController()
 export class Game {
+  private movingPlayerId = ''
+
   private getSocketGameRoom(socket: Socket): string {
     const socketRooms = Array.from(socket.rooms.values()).filter(r => r !== socket.id)
     const room = socketRooms?.length && socketRooms[0]
@@ -10,10 +18,23 @@ export class Game {
     return room
   }
 
-  @OnMessage('update_game')
-  public async updateGame(@ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+  @OnMessage('hit')
+  public async hit(
+    @SocketIO() io: Server,
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() isHit: boolean,
+  ) {
     const room = this.getSocketGameRoom(socket)
-    socket.to(room).emit('on_game_update', message)
+    if (!isHit) this.movingPlayerId = socket.id
+
+    io.in(room).emit('on_player_move_id', this.movingPlayerId)
+    socket.to(room).emit('on_hit', isHit)
+  }
+
+  @OnMessage('update_game')
+  public async updateGame(@ConnectedSocket() socket: Socket, @MessageBody() position: any) {
+    const room = this.getSocketGameRoom(socket)
+    socket.to(room).emit('on_game_update', position)
   }
 
   @OnMessage('stop_game')

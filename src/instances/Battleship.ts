@@ -1,3 +1,4 @@
+import { Socket } from 'socket.io-client'
 import Field from '@/entities/Field'
 import FightField from '@/entities/FightField'
 import gameService from '@/services/game-service'
@@ -17,6 +18,7 @@ export default class Battleship {
   private ships: Ship[] = []
   private controls = Controls
   private overButton = new Button({ id: 'over-button', text: 'surrender' })
+  private ws: Socket | null = null
 
   public run(): void {
     this.field = new Field()
@@ -27,26 +29,23 @@ export default class Battleship {
     this.controller.attach(this.field)
     this.controller.attach(this.fightField)
     this.controller.setState(GameState.START)
+    this.ws = socketService.socket
     this.handleGameStart()
   }
 
   public handleGameUpdate(): void {
-    if (!socketService.socket) return
+    if (!this.ws) return
 
-    const shoot = (position: IPoint) => {
-      this.field.shoot(position)
-      gameService.isPlayerTurn = false
-    }
-
-    gameService.onGameUpdate(socketService.socket, shoot)
+    gameService.onGameUpdate(this.ws, (position: IPoint) => this.field.shoot(position))
+    gameService.onPlayerMoveId(this.ws)
   }
 
   public handleGameStart(): void {
-    if (!socketService.socket) return
+    if (!this.ws) return
 
-    gameService.onGamePlay(socketService.socket, () => notify('PlayerPlaying'))
-    gameService.onTwoPlayersJoined(socketService.socket, () => notify('TwoPlayersInRoom'))
-    gameService.onGameStop(socketService.socket, () => {
+    gameService.onGamePlay(this.ws, () => notify('PlayerPlaying'))
+    gameService.onTwoPlayersJoined(this.ws, () => notify('TwoPlayersInRoom'))
+    gameService.onGameStop(this.ws, () => {
       notify('PlayerSurrendered')
       this.reset()
       gameService.reset()
@@ -54,15 +53,15 @@ export default class Battleship {
   }
 
   private over(): void {
-    if (!socketService.socket) return
+    if (!this.ws) return
 
     this.reset()
-    gameService.stopGame(socketService.socket)
+    gameService.stopGame(this.ws)
     notify('GameIsOver')
   }
 
   private play(): void {
-    if (!this.canPlay || !socketService.socket) return
+    if (!this.canPlay || !this.ws) return
 
     this.unsetControls()
     this.controller.setState(GameState.PLAY)
@@ -70,7 +69,7 @@ export default class Battleship {
     this.overButton.click = () => this.over()
 
     this.handleGameUpdate()
-    gameService.playGame(socketService.socket)
+    gameService.playGame(this.ws)
   }
 
   private reset(): void {

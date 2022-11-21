@@ -1,3 +1,4 @@
+import { Socket } from 'socket.io-client'
 import Utils from '@/utils'
 import Drawer from './Drawer'
 import Canvas from '@/components/Canvas'
@@ -10,16 +11,22 @@ import { GameState } from '@/models/enums'
 import { notify } from '@/entities/Notifications'
 import { FieldRect, FightFieldParams } from '@/models'
 import { IObserver, IPoint, ISubject } from '@/models/types'
+import Point from './Point'
 
 export default class FightField implements IObserver {
   private instance = new Canvas(FightFieldParams)
   private drawer = new Drawer(this.instance.ctx)
   private backgroundGrid = new BackgroundGrid('fight-field')
   private shottedCells = Utils.getDefaultGrid()
+  private ws: Socket | null
+  private currentShot: IPoint = new Point(0, 0)
 
   constructor() {
     this.backgroundGrid.draw()
     this.instance.appendTo('fight-field')
+    this.ws = socketService.socket
+
+    this.handleHit()
   }
 
   public update(subject: ISubject): void {
@@ -59,6 +66,15 @@ export default class FightField implements IObserver {
     return result
   }
 
+  private handleHit(): void {
+    if (!this.ws) return
+
+    gameService.onHit(this.ws, (isHit: boolean) => {
+      if (isHit) notify('YouHitOpponent')
+      this.drawShot(this.currentShot, isHit)
+    })
+  }
+
   private setHandlers(): void {
     this.setClick()
   }
@@ -82,30 +98,30 @@ export default class FightField implements IObserver {
   }
 
   private shoot({ x, y }: IPoint): void {
-    if (!socketService.socket) return
+    if (!this.ws) return
     if (!gameService.canPlay) {
       notify('PlayerIsNotReady')
-
       return
     }
     if (this.shottedCells[y][x] === 1) return
 
-    if (!gameService.isPlayerTurn) {
+    if (gameService.movingPlayerId !== this.ws.id) {
+      notify('NotYourMove')
+    } else {
+      this.currentShot = { x, y }
       this.shottedCells[y][x] = 1
-      gameService.updateGame(socketService.socket, { x, y })
-      this.drawShot({ x, y })
-      gameService.isPlayerTurn = true
+      gameService.updateGame(this.ws, { x, y })
     }
   }
 
-  private drawShot({ x, y }: IPoint): void {
+  private drawShot({ x, y }: IPoint, isHit: boolean = false): void {
     this.drawer.fillCircle({
       position: {
         x: x * Config.cellSize + Config.halfCellSize,
         y: y * Config.cellSize + Config.halfCellSize,
       },
       radius: 10,
-      color: Config.successShotColor,
+      color: isHit ? Config.successShotColor : Config.failShotColor,
     })
   }
 }

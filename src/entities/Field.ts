@@ -9,6 +9,8 @@ import { GameState } from '@/models/enums'
 import { IObserver, IPoint, ISubject } from '@/models/types'
 import { Directions, FieldParams, FieldRect } from '@/models'
 import { Config } from '@/config'
+import gameService from '@/services/game-service'
+import socketService from '@/services/socket-service'
 
 export default class Field implements IObserver {
   private instance = new Canvas(FieldParams)
@@ -91,17 +93,22 @@ export default class Field implements IObserver {
   }
 
   public shoot({ x, y }: IPoint): void {
+    if (!socketService.socket) return
+    let isHit = false
+
     if (this.grid[y][x] === 1) {
-      this.hit({ x, y })
       this.grid[y][x] = 2
-      return
+      this.drawHit({ x, y })
+      isHit = true
+    } else {
+      this.grid[y][x] = -2
+      this.drawMiss({ x, y })
     }
 
-    this.grid[y][x] = -2
-    this.miss({ x, y })
+    gameService.hit(socketService.socket, isHit)
   }
 
-  private hit({ x, y }: IPoint): void {
+  private drawHit({ x, y }: IPoint): void {
     this.drawer.drawCross({
       x: x * Config.cellSize + Config.halfCellSize,
       y: y * Config.cellSize + Config.halfCellSize,
@@ -110,7 +117,7 @@ export default class Field implements IObserver {
     })
   }
 
-  private miss({ x, y }: IPoint): void {
+  private drawMiss({ x, y }: IPoint): void {
     this.drawer.fillCircle({
       position: {
         x: x * Config.cellSize + Config.halfCellSize,
