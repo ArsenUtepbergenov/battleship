@@ -5,15 +5,16 @@ import { GameState } from '@/models/enums'
 import { IObserver, ISubject } from '@/models/types'
 
 export default class Button extends Element<HTMLButtonElement> implements IObserver {
-  constructor({ id, classList, text }: ButtonNode) {
+  constructor({ id, classList, text, startIcon }: ButtonNode) {
     super('button')
-    this.init({ id, classList, text })
+    this.init({ id, classList, text, startIcon })
   }
 
-  protected init({ id, classList, text = '' }: ButtonNode): void {
+  protected init({ id, classList, text = '', startIcon }: ButtonNode): void {
     try {
       super.init({ id, classList })
       this.instance.innerHTML = text
+      if (startIcon) this.addStartIcon(startIcon)
     } catch (error) {
       console.error(error)
     }
@@ -33,5 +34,9 @@ export default class Button extends Element<HTMLButtonElement> implements IObser
         this.undisable()
         break
     }
+  }
+
+  private addStartIcon(icon: HTMLElement): void {
+    this.instance.prepend(icon)
   }
 }

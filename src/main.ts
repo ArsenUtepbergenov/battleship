@@ -30,5 +30,5 @@ function mainDev() {
   const game = new Battleship().run()
 }
 
-main()
-// mainDev()
+// main()
+mainDev()

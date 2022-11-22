@@ -18,6 +18,7 @@ export type TextNode = Node & {
 
 export type ButtonNode = Node & {
   text: string
+  startIcon?: HTMLElement
 }
 
 export type TextInputNode = Node & {
