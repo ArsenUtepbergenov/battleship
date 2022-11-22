@@ -3,11 +3,11 @@ import { Socket } from 'socket.io-client'
 
 class GameService {
   public movingPlayerId = ''
-  public canPlay = false
+  public playersCanPlay = 0
   public twoPlayersInRoom = false
 
   public reset(): void {
-    this.canPlay = false
+    this.playersCanPlay = 0
     this.movingPlayerId = ''
   }
 
@@ -22,18 +22,19 @@ class GameService {
 
   // start/play
   public async playGame(socket: Socket) {
-    socket.emit('play_game')
+    socket.emit('play_game', !this.movingPlayerId ? socket.id : '')
+  }
+
+  public async onPlayersCanPlay(socket: Socket) {
+    socket.on('on_players_can_play', () => this.playersCanPlay++)
   }
 
   public async onGamePlay(socket: Socket, listener: () => void) {
-    socket.on('on_game_play', () => {
-      this.canPlay = true
-      listener()
-    })
+    socket.on('on_game_play', listener)
   }
 
   public async onTwoPlayersJoined(socket: Socket, listener: () => void) {
-    socket.on('two_players', () => {
+    socket.on('on_two_players', () => {
       this.twoPlayersInRoom = true
       listener()
     })
@@ -68,6 +69,15 @@ class GameService {
 
   public async onGameStop(socket: Socket, listener: (id: string) => void) {
     socket.on('on_game_stop', listener)
+  }
+
+  public async terminateGame(socket: Socket) {
+    this.reset()
+    socket.emit('terminate_game')
+  }
+
+  public async onGameTerminate(socket: Socket, listener: () => void) {
+    socket.on('on_game_terminate', listener)
   }
 }
 

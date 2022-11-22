@@ -48,15 +48,26 @@ export class Game {
     io.in(room).emit('on_player_move_id', this.movingPlayerId)
   }
 
-  @OnMessage('play_game')
-  public async playGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
+  @OnMessage('terminate_game')
+  public async terminateGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
     const room = this.getSocketGameRoom(socket)
 
-    if (!this.movingPlayerId) {
-      this.movingPlayerId = socket.id
-      io.in(room).emit('on_player_move_id', this.movingPlayerId)
-    }
+    io.in(room).emit('on_game_terminate')
+    this.movingPlayerId = ''
+    io.in(room).emit('on_player_move_id', this.movingPlayerId)
+  }
 
+  @OnMessage('play_game')
+  public async playGame(
+    @SocketIO() io: Server,
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() movingPlayerId: string,
+  ) {
+    const room = this.getSocketGameRoom(socket)
+
+    if (movingPlayerId) this.movingPlayerId = movingPlayerId
+    io.in(room).emit('on_player_move_id', this.movingPlayerId)
+    io.in(room).emit('on_players_can_play')
     socket.to(room).emit('on_game_play')
   }
 }

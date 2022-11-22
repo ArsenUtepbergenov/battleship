@@ -75,11 +75,11 @@ export default class FightField implements IObserver {
     })
   }
 
-  private setHandlers(): void {
+  public setHandlers(): void {
     this.setClick()
   }
 
-  private unsetHandlers(): void {
+  public unsetHandlers(): void {
     this.instance.click = null
   }
 
@@ -99,7 +99,7 @@ export default class FightField implements IObserver {
 
   private shoot({ x, y }: IPoint): void {
     if (!this.ws) return
-    if (!gameService.canPlay) {
+    if (gameService.playersCanPlay < 2) {
       notify('PlayerIsNotReady')
       return
     }

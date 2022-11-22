@@ -17,7 +17,7 @@ export default class Battleship {
   private fightField!: FightField
   private ships: Ship[] = []
   private controls = Controls
-  private overButton = new Button({ id: 'over-button', text: 'surrender' })
+  private overButton = new Button({ id: 'over-button', text: 'replay' })
   private ws: Socket | null = null
 
   public run(): void {
@@ -36,18 +36,21 @@ export default class Battleship {
   private handleGameStart(): void {
     if (!this.ws) return
 
+    gameService.onPlayersCanPlay(this.ws)
     gameService.onGamePlay(this.ws, () => notify('PlayerPlaying'))
     gameService.onTwoPlayersJoined(this.ws, () => notify('TwoPlayersInRoom'))
     gameService.onGameStop(this.ws, (winnerId: string) => {
       if (!this.ws) return
 
+      this.fightField.unsetHandlers()
+
       if (this.ws.id === winnerId) {
-        this.reset()
         notify('PlayerWon')
         return
       }
-      this.over()
+      notify('GameIsOver')
     })
+    gameService.onGameTerminate(this.ws, () => this.over())
     gameService.onPlayerMoveId(this.ws)
     gameService.onGameUpdate(this.ws, (position: IPoint) => this.field.shoot(position))
   }
@@ -65,7 +68,11 @@ export default class Battleship {
     this.unsetControls()
     this.controller.setState(GameState.PLAY)
     this.overButton.undisable()
-    this.overButton.click = () => this.over()
+    this.overButton.click = () => {
+      if (!this.ws) return
+
+      gameService.terminateGame(this.ws)
+    }
 
     gameService.playGame(this.ws)
   }
