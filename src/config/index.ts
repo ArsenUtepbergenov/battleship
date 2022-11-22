@@ -3,9 +3,9 @@ import { Ships } from '@/models/enums'
 export const URL = 'http://localhost:9000'
 
 export const TypeShips = [
-  // { amount: 1, type: Ships.TorpedoBoat },
+  { amount: 1, type: Ships.TorpedoBoat },
   { amount: 1, type: Ships.Destroyer },
-  // { amount: 2, type: Ships.Cruiser },
+  // { amount: 1, type: Ships.Cruiser },
   // { amount: 1, type: Ships.Battleship },
 ]
 

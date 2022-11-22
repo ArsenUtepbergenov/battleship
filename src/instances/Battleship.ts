@@ -43,6 +43,7 @@ export default class Battleship {
       if (!this.ws) return
 
       this.fightField.unsetHandlers()
+      this.fightField.resetCursor()
 
       if (this.ws.id === winnerId) {
         notify('PlayerWon')
@@ -100,6 +101,8 @@ export default class Battleship {
     getControl('play').click = () => this.play()
     getControl('reset').click = () => this.field.reset()
     getControl('undo').click = () => this.field.undo()
+    getControl('random').click = () => this.field.putShipsToRandom()
+
     document.onkeydown = event => {
       if (event.code === 'Enter') this.play()
       return true

@@ -30,6 +30,51 @@ export default class Field implements IObserver {
     this.instance.appendTo('field')
   }
 
+  private getCoordinates(ship: Ship): IPoint {
+    if (Math.random() < 0.5) ship.toggleOrientation()
+    let maxX = 9
+    let maxY = 9
+    const offset = 10 - ship.size
+
+    ship.isHorizontal ? (maxX = offset) : (maxY = offset)
+    const iX = Utils.randomIntByInterval(0, maxX)
+    const iY = Utils.randomIntByInterval(0, maxY)
+
+    return { x: iX, y: iY }
+  }
+
+  public putShipsToRandom(): void {
+    this.reset()
+
+    if (!this.ships?.length) return
+    let i = this.ships.length
+
+    while (i > 0) {
+      const ship = this.ships[i - 1]
+
+      const { x: iX, y: iY } = this.getCoordinates(ship)
+
+      if (!this.occupyShip(ship, iX, iY)) continue
+
+      if (!this.shipsStartPositions.has(ship.id))
+        this.shipsStartPositions.set(ship.id, new Point(ship.x, ship.y))
+
+      for (let i = 0; i < ship.size; i++) {
+        let x = iX,
+          y = iY
+        ship.isHorizontal ? (x += i) : (y += i)
+
+        this.occupyAroundShip(y, x)
+      }
+
+      this.setPositionOfShip(ship, iX * Config.cellSize + 2, iY * Config.cellSize + 2)
+      this.shipsOnField.push(ship)
+      i--
+    }
+
+    this.areAllShipsOnField = this.shipsOnField.length === Config.numberShips
+  }
+
   public update(subject: ISubject): void {
     const isController = subject instanceof GameController
 
