@@ -28,6 +28,10 @@ export default class FightField implements IObserver {
     this.handleHit()
   }
 
+  public resetCursor(): void {
+    this.instance.setCursor()
+  }
+
   public update(subject: ISubject): void {
     const isController = subject instanceof GameController
 

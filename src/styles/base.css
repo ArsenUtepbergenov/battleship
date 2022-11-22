@@ -7,11 +7,13 @@
   --reset-button: #413873;
   --undo-button: #a45e5e;
   --over-button: #735c26;
+  --random-button: #7b3188;
   --join-button: #a93c34;
   --mark-color: #a93c34;
   --play-button-hover: #406f22;
   --reset-button-hover: #291f6c;
   --undo-button-hover: #ca6464;
+  --random-button-hover: #53215b;
 }
 
 html, body {
@@ -104,18 +106,29 @@ mark {
 }
 
 #controls {
-  margin: 20px auto;
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 button {
   border: 0;
   font-size: 1.2rem;
-  margin-right: 16px;
-  padding: 10px 22px;
+  margin-bottom: 16px;
+  padding: 10px 16px;
   letter-spacing: 1px;
   color: white;
   cursor: pointer;
   text-transform: capitalize;
+}
+
+#random-button {
+  background-color: var(--random-button);
+}
+
+#random-button:hover {
+  background-color: var(--random-button-hover);
 }
 
 #reset-button {
@@ -200,6 +213,7 @@ button {
 #join-room-button {
   background-color: var(--join-button);
   border: 2px solid white;
+  margin: 0;
 }
 
 #join-room-button:hover {

@@ -2,6 +2,10 @@ import { Config } from '@/config'
 import { IPoint, IRect } from '@/models/types'
 
 export default class Utils {
+  public static randomIntByInterval(min: number, max: number): number {
+    return Math.floor(min + Math.random() * (max + 1 - min))
+  }
+
   public static div(numerator: number, denominator: number): number {
     return (numerator - (numerator % denominator)) / denominator
   }
