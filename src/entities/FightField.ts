@@ -1,21 +1,31 @@
+import { Socket } from 'socket.io-client'
 import Utils from '@/utils'
+import Drawer from './Drawer'
 import Canvas from '@/components/Canvas'
 import BackgroundGrid from './BackgroundGrid'
+import gameService from '@/services/game-service'
+import socketService from '@/services/socket-service'
 import GameController from '@/entities/GameController'
-import { IObserver, IPoint, ISubject } from '@/models/types'
-import { Config, FieldRect, FightFieldParams } from '@/models'
+import { Config } from '@/config'
 import { GameState } from '@/models/enums'
-import Drawer from './Drawer'
+import { notify } from '@/entities/Notifications'
+import { FieldRect, FightFieldParams } from '@/models'
+import { IObserver, IPoint, ISubject } from '@/models/types'
 
 export default class FightField implements IObserver {
   private instance = new Canvas(FightFieldParams)
   private drawer = new Drawer(this.instance.ctx)
   private backgroundGrid = new BackgroundGrid('fight-field')
   private shottedCells = Utils.getDefaultGrid()
+  private ws: Socket | null
+  private currentShot: IPoint | null = null
 
   constructor() {
     this.backgroundGrid.draw()
     this.instance.appendTo('fight-field')
+    this.ws = socketService.socket
+
+    this.handleHit()
   }
 
   public update(subject: ISubject): void {
@@ -43,6 +53,7 @@ export default class FightField implements IObserver {
     this.shottedCells = Utils.getDefaultGrid()
     this.unsetHandlers()
     this.instance.setCursor()
+    this.currentShot = null
   }
 
   public areAllCellsShotted(): boolean {
@@ -55,11 +66,20 @@ export default class FightField implements IObserver {
     return result
   }
 
-  private setHandlers(): void {
+  private handleHit(): void {
+    if (!this.ws) return
+
+    gameService.onHit(this.ws, (isHit: boolean) => {
+      if (isHit) notify('YouHitOpponent')
+      this.drawShot(this.currentShot!, isHit)
+    })
+  }
+
+  public setHandlers(): void {
     this.setClick()
   }
 
-  private unsetHandlers(): void {
+  public unsetHandlers(): void {
     this.instance.click = null
   }
 
@@ -78,21 +98,30 @@ export default class FightField implements IObserver {
   }
 
   private shoot({ x, y }: IPoint): void {
+    if (!this.ws) return
+    if (gameService.playersCanPlay < 2) {
+      notify('PlayerIsNotReady')
+      return
+    }
     if (this.shottedCells[y][x] === 1) return
 
-    this.shottedCells[y][x] = 1
-
-    this.drawShot({ x, y })
+    if (gameService.movingPlayerId !== this.ws.id) {
+      notify('NotYourMove')
+    } else {
+      this.currentShot = { x, y }
+      this.shottedCells[y][x] = 1
+      gameService.updateGame(this.ws, { x, y })
+    }
   }
 
-  private drawShot({ x, y }: IPoint): void {
+  private drawShot({ x, y }: IPoint, isHit: boolean = false): void {
     this.drawer.fillCircle({
       position: {
         x: x * Config.cellSize + Config.halfCellSize,
         y: y * Config.cellSize + Config.halfCellSize,
       },
       radius: 10,
-      color: Config.successShotColor,
+      color: isHit ? Config.successShotColor : Config.failShotColor,
     })
   }
 }

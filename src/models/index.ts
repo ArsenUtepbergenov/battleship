@@ -1,4 +1,5 @@
-import { NotificationType, Ships } from './enums'
+import { Config } from '@/config'
+import { ColorType, Ships } from './enums'
 
 export type Node = {
   id?: string
@@ -8,6 +9,7 @@ export type Node = {
 export type CanvasNode = Node & {
   width: number
   height: number
+  outlineColor?: string
 }
 
 export type TextNode = Node & {
@@ -16,40 +18,25 @@ export type TextNode = Node & {
 
 export type ButtonNode = Node & {
   text: string
+  startIcon?: HTMLElement
+}
+
+export type TextInputNode = Node & {
+  value?: string
+  placeholder?: string
 }
 
 export type NotificationNode = Node & {
   text?: string
-  type?: NotificationType
+  type?: ColorType
   lifeTime?: number
-}
-
-export const TypeShips = [
-  { amount: 1, type: Ships.TorpedoBoat },
-  // { amount: 3, type: Ships.Destroyer },
-  // { amount: 2, type: Ships.Cruiser },
-  // { amount: 1, type: Ships.Battleship },
-]
-
-export abstract class Config {
-  static size = 360
-  static cells = 10
-  static cellSize = Math.floor(Config.size / Config.cells)
-  static halfCellSize = Config.cellSize / 2
-  static gridColor = '#483d8b'
-  static shipColor = '#f08080'
-  static successShotColor = '#8bc34a'
-  static missedShotColor = '#2196f3'
-  static failShotColor = '#f44336'
-  static shipSize = Config.cellSize
-  static shipsSpotSize = Config.shipSize * 7
-  static gridPositionsSize = Config.size / Config.cellSize
-  static numberShips = TypeShips.reduce((a, prev) => a + prev.amount, 0)
 }
 
 export const FieldRect = { x: 0, y: 0, w: Config.size, h: Config.size }
 
-export type EventHandler = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
+export type EventHandler = ((this: GlobalEventHandlers, ev: Event) => any) | null
+export type MouseEventHandler = ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null
+export type KeyboardEventHandler = ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null
 
 export type ShipParams = {
   x: number
@@ -63,6 +50,7 @@ export const BackgroundGridParams = {
   id: 'grid',
   width: Config.size,
   height: Config.size,
+  outlineColor: Config.gridColor,
 }
 
 export const FightFieldParams = {
@@ -70,6 +58,7 @@ export const FightFieldParams = {
   id: 'opponent-game',
   width: Config.size + Config.shipsSpotSize,
   height: Config.size,
+  outlineColor: Config.gridColor,
 }
 
 export const FieldParams = {
@@ -77,6 +66,7 @@ export const FieldParams = {
   id: 'game',
   width: Config.size + Config.shipsSpotSize,
   height: Config.size,
+  outlineColor: Config.gridColor,
 }
 
 /**
@@ -97,4 +87,11 @@ export const Messages = {
   NotAllShipsOnField: 'Put all ships on the field!',
   GameHasStarted: 'The game has started! Good luck!',
   GameIsOver: 'The game is over! Thanks for playing.',
+  TwoPlayersInRoom: 'Your opponent has joined.',
+  NoTwoPlayersInRoom: 'You don not have an opponent!',
+  PlayerPlaying: 'Your opponent has started playing.',
+  PlayerIsNotReady: 'Your opponent is not ready.',
+  PlayerWon: 'Congratulations! You have won!',
+  NotYourMove: 'It is not your move now.',
+  YouHitOpponent: 'Nice! You have hit opponent!',
 }

@@ -1,14 +1,17 @@
-import { Node, EventHandler } from '@/models'
+import { Node, MouseEventHandler, EventHandler } from '@/models'
 
-export default abstract class Element {
-  protected instance: HTMLElement
+export default abstract class Element<InstanceType extends HTMLElement> {
+  protected instance: InstanceType
 
   constructor(nameElement: string) {
-    this.instance = document.createElement(nameElement)
+    this.instance = document.createElement(nameElement) as InstanceType
   }
 
   protected init({ id, classList }: Node): void {
-    id && this.instance.setAttribute('id', id)
+    if (id) {
+      const tid = id.trim()
+      this.instance.setAttribute('id', tid)
+    }
     classList?.length && this.setClassList(classList)
   }
 
@@ -48,7 +51,15 @@ export default abstract class Element {
     this.removeAttribute('disabled')
   }
 
-  public set click(fn: EventHandler) {
+  public set input(fn: EventHandler) {
+    this.instance.oninput = fn
+  }
+
+  public set change(fn: EventHandler) {
+    this.instance.onchange = fn
+  }
+
+  public set click(fn: MouseEventHandler) {
     this.instance.onclick = fn
   }
 

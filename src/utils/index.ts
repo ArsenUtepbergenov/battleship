@@ -1,4 +1,4 @@
-import { Config } from '@/models'
+import { Config } from '@/config'
 import { IPoint, IRect } from '@/models/types'
 
 export default class Utils {
