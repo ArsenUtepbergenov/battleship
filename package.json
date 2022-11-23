@@ -4,8 +4,9 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "tsc && vite build --emptyOutDir=true",
+    "preview": "vite preview",
+    "deploy": "npm run build; cd server && npm run build"
   },
   "devDependencies": {
     "prettier": "^2.7.1",
