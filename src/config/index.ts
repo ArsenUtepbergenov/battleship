@@ -1,7 +1,5 @@
 import { Ships } from '@/models/enums'
 
-export const URL = 'http://localhost:9000'
-
 export const TypeShips = [
   { amount: 4, type: Ships.TorpedoBoat },
   { amount: 3, type: Ships.Destroyer },

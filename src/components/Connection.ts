@@ -2,7 +2,6 @@ import gameService from '@/services/game-service'
 import socketService from '@/services/socket-service'
 import Button from './controls/Button'
 import TextInput from './inputs/TextInput'
-import { URL } from '@/config'
 
 export default class Connection {
   private roomName: string = ''
@@ -38,7 +37,7 @@ export default class Connection {
   }
 
   private async socketConnect(): Promise<void> {
-    await socketService.connect(URL).catch(error => console.log('Error: ', error))
+    await socketService.connect().catch(error => console.log('Error: ', error))
   }
 
   private async joinRoom(): Promise<void> {
