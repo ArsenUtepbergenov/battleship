@@ -1,7 +1,6 @@
-import { Config } from '@/config'
 import { IPoint, IRect } from '@/models/types'
 
-export default class Utils {
+export default abstract class Utils {
   public static randomIntByInterval(min: number, max: number): number {
     return Math.floor(min + Math.random() * (max + 1 - min))
   }
@@ -72,11 +71,8 @@ export default class Utils {
     return false
   }
 
-  public static removeDefaultAction(event: MouseEvent): void {
+  public static removeDefaultAction(event: Event): void {
     event.preventDefault()
     event.stopPropagation()
   }
-
-  public static getDefaultGrid = () =>
-    Utils.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
 }

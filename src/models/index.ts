@@ -1,3 +1,4 @@
+import Utils from '@/utils'
 import { Config } from '@/config'
 import { ColorType, Ships } from './enums'
 
@@ -94,4 +95,8 @@ export const Messages = {
   PlayerWon: 'Congratulations! You have won!',
   NotYourMove: 'It is not your move now.',
   YouHitOpponent: 'Nice! You have hit opponent!',
+}
+
+export function getDefaultGrid(): number[][] {
+  return Utils.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
 }

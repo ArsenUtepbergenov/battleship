@@ -9,14 +9,14 @@ import GameController from '@/entities/GameController'
 import { Config } from '@/config'
 import { GameState } from '@/models/enums'
 import { notify } from '@/entities/Notifications'
-import { FieldRect, FightFieldParams } from '@/models'
+import { FieldRect, FightFieldParams, getDefaultGrid } from '@/models'
 import { IObserver, IPoint, ISubject } from '@/models/types'
 
 export default class FightField implements IObserver {
   private instance = new Canvas(FightFieldParams)
   private drawer = new Drawer(this.instance.ctx)
   private backgroundGrid = new BackgroundGrid('fight-field')
-  private shottedCells = Utils.getDefaultGrid()
+  private shottedCells = getDefaultGrid()
   private ws: Socket | null
   private currentShot: IPoint | null = null
 
@@ -54,7 +54,7 @@ export default class FightField implements IObserver {
 
   public reset(): void {
     this.instance.clear()
-    this.shottedCells = Utils.getDefaultGrid()
+    this.shottedCells = getDefaultGrid()
     this.unsetHandlers()
     this.instance.setCursor()
     this.currentShot = null

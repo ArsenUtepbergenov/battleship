@@ -7,7 +7,7 @@ import GameController from '@/entities/GameController'
 import { Ship } from '@/entities/Ship'
 import { GameState } from '@/models/enums'
 import { IObserver, IPoint, ISubject } from '@/models/types'
-import { Directions, FieldParams, FieldRect } from '@/models'
+import { Directions, FieldParams, FieldRect, getDefaultGrid } from '@/models'
 import { Config } from '@/config'
 import gameService from '@/services/game-service'
 import socketService from '@/services/socket-service'
@@ -20,7 +20,7 @@ export default class Field implements IObserver {
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
   private offset = new Point()
-  private grid = Utils.getDefaultGrid()
+  private grid = getDefaultGrid()
   private shipsOnField: Ship[] = []
   private areAllShipsOnField = false
   private numberLiveShipCells = 0
@@ -111,7 +111,7 @@ export default class Field implements IObserver {
 
   public reset(): void {
     this.resetCurrentShip()
-    this.grid = Utils.getDefaultGrid()
+    this.grid = getDefaultGrid()
     this.shipsOnField.forEach(ship => this.moveToStartPosition(ship))
     this.shipsOnField = []
     this.shipsStartPositions.clear()
