@@ -36,7 +36,7 @@ export default class Field implements IField {
     if (Math.random() < 0.5) ship.toggleOrientation()
     let maxX = 9
     let maxY = 9
-    const offset = 10 - ship.size
+    const offset = Config.cells - ship.size
 
     ship.isHorizontal ? (maxX = offset) : (maxY = offset)
     const iX = Utils.randomIntByInterval(0, maxX)
@@ -56,7 +56,7 @@ export default class Field implements IField {
 
       const { x: iX, y: iY } = this.getCoordinates(ship)
 
-      if (!this.occupyShip(ship, iX, iY)) continue
+      if (!this.occupyCellsByShip(ship, iX, iY)) continue
 
       if (!this.shipsStartPositions.has(ship.id))
         this.shipsStartPositions.set(ship.id, new Point(ship.x, ship.y))
@@ -66,10 +66,10 @@ export default class Field implements IField {
           y = iY
         ship.isHorizontal ? (x += i) : (y += i)
 
-        this.occupyAroundShip(y, x)
+        this.occupyCellsAroundShip({ x, y })
       }
 
-      this.setPositionOfShip(ship, iX * Config.cellSize + 2, iY * Config.cellSize + 2)
+      this.setPositionOfShip(ship, { x: iX * Config.cellSize + 2, y: iY * Config.cellSize + 2 })
       this.shipsOnField.push(ship)
       i--
     }
@@ -79,7 +79,6 @@ export default class Field implements IField {
 
   public update(subject: ISubject): void {
     const isController = subject instanceof GameController
-
     if (!isController) return
 
     switch (subject.state) {
@@ -97,7 +96,6 @@ export default class Field implements IField {
 
   public freeze(): void {
     if (!this.isReady) return
-
     this.numberLiveShipCells = Config.numberShipCells
     this.unsetHandlers()
   }
@@ -129,17 +127,17 @@ export default class Field implements IField {
   }
 
   public undo(): void {
-    if (this.shipsOnField.length) {
-      const lastShip = this.shipsOnField.pop()
-      if (!lastShip) return
+    if (!this.shipsOnField?.length) return
 
-      this.resetCurrentShip()
-      this.removeShipFromField(lastShip)
-      this.moveToStartPosition(lastShip)
-      this.shipsStartPositions.delete(lastShip.id)
-      this.areAllShipsOnField = false
-      this.offset = new Point()
-    }
+    const lastShip = this.shipsOnField.pop()
+    if (!lastShip) return
+
+    this.resetCurrentShip()
+    this.removeShipFromField(lastShip)
+    this.moveToStartPosition(lastShip)
+    this.shipsStartPositions.delete(lastShip.id)
+    this.areAllShipsOnField = false
+    this.offset = new Point()
   }
 
   public shoot({ x, y }: IPoint): void {
@@ -184,7 +182,7 @@ export default class Field implements IField {
       ship.isHorizontal ? (x += i) : (y += i)
 
       this.grid[y][x] = 0
-      if (!this.occupyAroundShip(y, x, -1, 0)) return
+      if (!this.occupyCellsAroundShip({ x, y }, -1, 0)) return
     }
 
     this.shipsOnField.forEach(ship => {
@@ -196,7 +194,7 @@ export default class Field implements IField {
           y = iY
         ship.isHorizontal ? (x += i) : (y += i)
 
-        if (!this.occupyAroundShip(y, x)) return
+        if (!this.occupyCellsAroundShip({ x, y })) return
       }
     })
   }
@@ -301,7 +299,7 @@ export default class Field implements IField {
     return true
   }
 
-  private occupyShip(ship: Ship, iX: number, iY: number): boolean {
+  private occupyCellsByShip(ship: Ship, iX: number, iY: number): boolean {
     const isH = ship.isHorizontal
 
     if (isH) {
@@ -325,22 +323,22 @@ export default class Field implements IField {
     const iX = Utils.div(ship.x, size)
     const iY = Utils.div(ship.y, size)
 
-    if (!this.occupyShip(ship, iX, iY)) return
+    if (!this.occupyCellsByShip(ship, iX, iY)) return
 
     for (let i = 0; i < ship.size; i++) {
       let x = iX,
         y = iY
       ship.isHorizontal ? (x += i) : (y += i)
 
-      if (!this.occupyAroundShip(y, x)) return
+      if (!this.occupyCellsAroundShip({ x, y })) return
     }
 
-    this.setPositionOfShip(ship, iX * size + 2, iY * size + 2)
+    this.setPositionOfShip(ship, { x: iX * size + 2, y: iY * size + 2 })
     this.shipsOnField.push(ship)
     this.areAllShipsOnField = this.shipsOnField.length === Config.numberShips
   }
 
-  private occupyAroundShip(y: number, x: number, from: number = 0, to: number = -1): boolean {
+  private occupyCellsAroundShip({ x, y }: IPoint, from: number = 0, to: number = -1): boolean {
     try {
       for (const { c, r } of Directions) {
         const dx = x + c
@@ -360,25 +358,23 @@ export default class Field implements IField {
     }
   }
 
-  private setPositionOfShip(ship: Ship, x: number, y: number): void {
+  private setPositionOfShip(ship: Ship, { x, y }: IPoint): void {
     ship.setPosition(x, y)
     this.redrawShips()
     this.resetCurrentShip()
   }
 
   private moveToStartPosition(ship: Ship): void {
-    if (ship.id) {
-      const currentShipStartPosition = this.shipsStartPositions.get(ship.id)
+    if (!ship.id) return
 
-      if (!currentShipStartPosition) return
+    const p = this.shipsStartPositions.get(ship.id)
 
-      const { x, y } = currentShipStartPosition
+    if (!p) return
 
-      if (!ship.isHorizontal) ship.toggleOrientation()
+    if (!ship.isHorizontal) ship.toggleOrientation()
 
-      ship.setPosition(x, y)
-      this.redrawShips()
-    }
+    ship.setPosition(p.x, p.y)
+    this.redrawShips()
   }
 
   private resetCurrentShip(): void {
