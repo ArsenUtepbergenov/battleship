@@ -46,4 +46,6 @@ export interface IButton extends IObserver {
 export abstract class IField implements IObserver {
   abstract readonly canvas: Canvas
   abstract update(subject: ISubject): void
+  abstract setHandlers(): void
+  abstract unsetHandlers(): void
 }

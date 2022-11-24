@@ -11,13 +11,15 @@ import { GameState } from '@/models/enums'
 import { notify } from '@/entities/Notifications'
 import { FieldRect, FightFieldParams, getDefaultGrid } from '@/models'
 import { IField, IPoint, ISubject } from '@/models/types'
+import Renderer from './Renderer'
 
 export default class FightField implements IField {
   readonly canvas = new Canvas(FightFieldParams)
   private drawer = new Drawer(this.canvas.ctx)
+  private renderer = new Renderer(this.drawer)
   private backgroundGrid = new BackgroundGrid('fight-field')
   private shottedCells = getDefaultGrid()
-  private ws: Socket | null
+  private ws: Socket | null = null
   private currentShot: IPoint | null = null
 
   constructor() {
@@ -60,7 +62,7 @@ export default class FightField implements IField {
     this.currentShot = null
   }
 
-  public areAllCellsShotted(): boolean {
+  public get areAllCellsShotted(): boolean {
     let result = true
 
     this.shottedCells.forEach(row => {
@@ -70,21 +72,21 @@ export default class FightField implements IField {
     return result
   }
 
-  private handleHit(): void {
-    if (!this.ws) return
-
-    gameService.onHit(this.ws, (isHit: boolean) => {
-      if (isHit) notify('YouHitOpponent')
-      this.drawShot(this.currentShot!, isHit)
-    })
+  public unsetHandlers(): void {
+    this.canvas.click = null
   }
 
   public setHandlers(): void {
     this.setClick()
   }
 
-  public unsetHandlers(): void {
-    this.canvas.click = null
+  private handleHit(): void {
+    if (!this.ws) return
+
+    gameService.onHit(this.ws, (isHit: boolean) => {
+      if (isHit) notify('YouHitOpponent')
+      this.renderer.drawShot(this.currentShot!, isHit)
+    })
   }
 
   private setClick(): void {
@@ -116,16 +118,5 @@ export default class FightField implements IField {
       this.shottedCells[y][x] = 1
       gameService.updateGame(this.ws, { x, y })
     }
-  }
-
-  private drawShot({ x, y }: IPoint, isHit: boolean = false): void {
-    this.drawer.fillCircle({
-      position: {
-        x: x * Config.cellSize + Config.halfCellSize,
-        y: y * Config.cellSize + Config.halfCellSize,
-      },
-      radius: 10,
-      color: isHit ? Config.successShotColor : Config.failShotColor,
-    })
   }
 }

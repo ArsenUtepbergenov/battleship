@@ -11,10 +11,12 @@ import { Directions, FieldParams, FieldRect, getDefaultGrid } from '@/models'
 import { Config } from '@/config'
 import gameService from '@/services/game-service'
 import socketService from '@/services/socket-service'
+import Renderer from './Renderer'
 
 export default class Field implements IField {
   readonly canvas = new Canvas(FieldParams)
   private drawer = new Drawer(this.canvas.ctx)
+  private renderer = new Renderer(this.drawer)
   private backgroundGrid = new BackgroundGrid('field')
   private ships: Ship[] = []
   private shipsStartPositions: Map<string, Point> = new Map()
@@ -146,36 +148,30 @@ export default class Field implements IField {
 
     if (this.grid[y][x] === 1) {
       this.grid[y][x] = 2
-      this.drawHit({ x, y })
+      this.renderer.drawHit({ x, y })
       isHit = true
       this.numberLiveShipCells--
     } else {
       this.grid[y][x] = -2
-      this.drawMiss({ x, y })
+      this.renderer.drawMiss({ x, y })
     }
 
     gameService.hit(socketService.socket, isHit)
     if (this.numberLiveShipCells <= 0) gameService.stopGame(socketService.socket)
   }
 
-  private drawHit({ x, y }: IPoint): void {
-    this.drawer.drawCross({
-      x: x * Config.cellSize + Config.halfCellSize,
-      y: y * Config.cellSize + Config.halfCellSize,
-      offset: Config.cellSize / 3,
-      color: Config.failShotColor,
-    })
+  public setHandlers(): void {
+    this.setMouseMove()
+    this.setMouseOut()
+    this.setClick()
+    this.setContextMenu()
   }
 
-  private drawMiss({ x, y }: IPoint): void {
-    this.drawer.fillCircle({
-      position: {
-        x: x * Config.cellSize + Config.halfCellSize,
-        y: y * Config.cellSize + Config.halfCellSize,
-      },
-      radius: 4,
-      color: Config.missedShotColor,
-    })
+  public unsetHandlers(): void {
+    this.canvas.mouseMove = null
+    this.canvas.mouseOut = null
+    this.canvas.click = null
+    this.canvas.contextMenu = null
   }
 
   private removeShipFromField(ship: Ship): void {
@@ -203,20 +199,6 @@ export default class Field implements IField {
         if (!this.occupyAroundShip(y, x)) return
       }
     })
-  }
-
-  private setHandlers(): void {
-    this.setMouseMove()
-    this.setMouseOut()
-    this.setClick()
-    this.setContextMenu()
-  }
-
-  private unsetHandlers(): void {
-    this.canvas.mouseMove = null
-    this.canvas.mouseOut = null
-    this.canvas.click = null
-    this.canvas.contextMenu = null
   }
 
   private isOnField(ship: Ship): boolean {
