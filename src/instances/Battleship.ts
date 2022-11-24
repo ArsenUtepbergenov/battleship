@@ -3,22 +3,30 @@ import Field from '@/entities/Field'
 import FightField from '@/entities/FightField'
 import gameService from '@/services/game-service'
 import Button from '@/components/controls/Button'
+import Buttons from '@/components/controls/Controls'
 import socketService from '@/services/socket-service'
 import GameController from '@/entities/GameController'
 import { IPoint } from '@/models/types'
 import { GameState } from '@/models/enums'
 import { notify } from '@/entities/Notifications'
 import { createShips, Ship } from '@/entities/Ship'
-import { appendControls, Controls, getControl, unsetControls } from '@/components/controls/Controls'
 
 export default class Battleship {
   private controller = new GameController()
   private field!: Field
   private fightField!: FightField
   private ships: Ship[] = []
-  private controls = Controls
+  private buttons = Buttons
   private overButton = new Button({ id: 'over-button', text: 'replay' })
   private ws: Socket | null = null
+
+  private static instance: Battleship
+  private constructor() {}
+
+  public static getInstance() {
+    if (!this.instance) this.instance = new Battleship()
+    return this.instance
+  }
 
   public run(): void {
     this.field = new Field()
@@ -98,10 +106,12 @@ export default class Battleship {
   }
 
   private setHandlers(): void {
-    getControl('play').click = () => this.play()
-    getControl('reset').click = () => this.field.reset()
-    getControl('undo').click = () => this.field.undo()
-    getControl('random').click = () => this.field.putShipsToRandom()
+    this.buttons.setClick([
+      () => this.play(),
+      () => this.field.reset(),
+      () => this.field.undo(),
+      () => this.field.putShipsToRandom(),
+    ])
 
     document.onkeydown = event => {
       if (event.code === 'Enter') this.play()
@@ -114,18 +124,18 @@ export default class Battleship {
 
     this.overButton.disable()
 
-    appendControls('controls')
+    this.buttons.append('controls')
     this.overButton.appendTo('controls')
 
     this.attachControls()
   }
 
   private attachControls(): void {
-    this.controls.forEach(c => this.controller.attach(c))
+    this.buttons.getAll.forEach(c => this.controller.attach(c))
   }
 
   private unsetControls(): void {
-    unsetControls()
+    this.buttons.unsetClick()
     document.onkeydown = null
   }
 

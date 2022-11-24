@@ -1,3 +1,5 @@
+import { MouseEventHandler } from '.'
+
 export interface IObserver {
   update(subject: ISubject): void
 }
@@ -33,4 +35,9 @@ export interface IFillRect extends IRect {
 export interface IStrokeCross extends IPoint {
   offset: number
   color?: string
+}
+
+export interface IButton extends IObserver {
+  click: MouseEventHandler
+  appendTo(parentNode: string): void
 }
