@@ -6,15 +6,15 @@ import BackgroundGrid from './BackgroundGrid'
 import GameController from '@/entities/GameController'
 import { Ship } from '@/entities/Ship'
 import { GameState } from '@/models/enums'
-import { IObserver, IPoint, ISubject } from '@/models/types'
+import { IField, IPoint, ISubject } from '@/models/types'
 import { Directions, FieldParams, FieldRect, getDefaultGrid } from '@/models'
 import { Config } from '@/config'
 import gameService from '@/services/game-service'
 import socketService from '@/services/socket-service'
 
-export default class Field implements IObserver {
-  private instance = new Canvas(FieldParams)
-  private drawer = new Drawer(this.instance.ctx)
+export default class Field implements IField {
+  readonly canvas = new Canvas(FieldParams)
+  private drawer = new Drawer(this.canvas.ctx)
   private backgroundGrid = new BackgroundGrid('field')
   private ships: Ship[] = []
   private shipsStartPositions: Map<string, Point> = new Map()
@@ -27,7 +27,7 @@ export default class Field implements IObserver {
 
   constructor() {
     this.backgroundGrid.draw()
-    this.instance.appendTo('field')
+    this.canvas.appendTo('field')
   }
 
   private getCoordinates(ship: Ship): IPoint {
@@ -213,10 +213,10 @@ export default class Field implements IObserver {
   }
 
   private unsetHandlers(): void {
-    this.instance.mouseMove = null
-    this.instance.mouseOut = null
-    this.instance.click = null
-    this.instance.contextMenu = null
+    this.canvas.mouseMove = null
+    this.canvas.mouseOut = null
+    this.canvas.click = null
+    this.canvas.contextMenu = null
   }
 
   private isOnField(ship: Ship): boolean {
@@ -226,16 +226,16 @@ export default class Field implements IObserver {
   private showPointerCursorOverShip(position: IPoint): void {
     for (const ship of this.ships) {
       if (Utils.checkCollisionPointToRect(position, ship) && !this.isOnField(ship)) {
-        this.instance.setCursor('pointer')
+        this.canvas.setCursor('pointer')
         break
       } else {
-        this.instance.setCursor()
+        this.canvas.setCursor()
       }
     }
   }
 
   private setMouseMove(): void {
-    this.instance.mouseMove = event => {
+    this.canvas.mouseMove = event => {
       this.showPointerCursorOverShip(Utils.getMouseCoordinates(event))
 
       if (!this.currentShip) return
@@ -243,13 +243,13 @@ export default class Field implements IObserver {
       const x = event.clientX - this.offset.x
       const y = event.clientY - this.offset.y
       this.currentShip.setPosition(x, y)
-      this.instance.setCursor('grab')
+      this.canvas.setCursor('grab')
       this.redrawShips()
     }
   }
 
   private setMouseOut(): void {
-    this.instance.mouseOut = () => {
+    this.canvas.mouseOut = () => {
       if (!this.currentShip) return
 
       this.moveToStartPosition(this.currentShip)
@@ -258,7 +258,7 @@ export default class Field implements IObserver {
   }
 
   private setClick(): void {
-    this.instance.click = event => {
+    this.canvas.click = event => {
       Utils.removeDefaultAction(event)
 
       const position = Utils.getMouseCoordinates(event)
@@ -269,7 +269,7 @@ export default class Field implements IObserver {
   }
 
   private setContextMenu(): void {
-    this.instance.contextMenu = event => {
+    this.canvas.contextMenu = event => {
       Utils.removeDefaultAction(event)
       if (!this.currentShip) return
 
@@ -401,15 +401,15 @@ export default class Field implements IObserver {
 
   private resetCurrentShip(): void {
     this.currentShip = null
-    this.instance.setCursor()
+    this.canvas.setCursor()
   }
 
   private redrawShips(): void {
-    this.instance.clear()
+    this.canvas.clear()
     this.drawShips()
   }
 
   private drawShips(): void {
-    this.ships.forEach(s => s.draw(this.instance.ctx))
+    this.ships.forEach(s => s.draw(this.canvas.ctx))
   }
 }

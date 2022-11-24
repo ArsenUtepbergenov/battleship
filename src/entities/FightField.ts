@@ -10,11 +10,11 @@ import { Config } from '@/config'
 import { GameState } from '@/models/enums'
 import { notify } from '@/entities/Notifications'
 import { FieldRect, FightFieldParams, getDefaultGrid } from '@/models'
-import { IObserver, IPoint, ISubject } from '@/models/types'
+import { IField, IPoint, ISubject } from '@/models/types'
 
-export default class FightField implements IObserver {
-  private instance = new Canvas(FightFieldParams)
-  private drawer = new Drawer(this.instance.ctx)
+export default class FightField implements IField {
+  readonly canvas = new Canvas(FightFieldParams)
+  private drawer = new Drawer(this.canvas.ctx)
   private backgroundGrid = new BackgroundGrid('fight-field')
   private shottedCells = getDefaultGrid()
   private ws: Socket | null
@@ -22,14 +22,14 @@ export default class FightField implements IObserver {
 
   constructor() {
     this.backgroundGrid.draw()
-    this.instance.appendTo('fight-field')
+    this.canvas.appendTo('fight-field')
     this.ws = socketService.socket
 
     this.handleHit()
   }
 
   public resetCursor(): void {
-    this.instance.setCursor()
+    this.canvas.setCursor()
   }
 
   public update(subject: ISubject): void {
@@ -39,11 +39,11 @@ export default class FightField implements IObserver {
 
     switch (subject.state) {
       case GameState.PLAY:
-        this.instance.setCursor('pointer')
+        this.canvas.setCursor('pointer')
         this.setHandlers()
         break
       case GameState.START:
-        this.instance.setCursor()
+        this.canvas.setCursor()
         this.unsetHandlers()
         break
       case GameState.OVER:
@@ -53,10 +53,10 @@ export default class FightField implements IObserver {
   }
 
   public reset(): void {
-    this.instance.clear()
+    this.canvas.clear()
     this.shottedCells = getDefaultGrid()
     this.unsetHandlers()
-    this.instance.setCursor()
+    this.canvas.setCursor()
     this.currentShot = null
   }
 
@@ -84,11 +84,11 @@ export default class FightField implements IObserver {
   }
 
   public unsetHandlers(): void {
-    this.instance.click = null
+    this.canvas.click = null
   }
 
   private setClick(): void {
-    this.instance.click = event => {
+    this.canvas.click = event => {
       Utils.removeDefaultAction(event)
 
       const position = Utils.getMouseCoordinates(event)
