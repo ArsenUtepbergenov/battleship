@@ -1,3 +1,4 @@
+import Utils from '@/utils'
 import { Config } from '@/config'
 import { ColorType, Ships } from './enums'
 
@@ -81,17 +82,8 @@ export const Directions = [
   { r: -1, c: 1 },
   { r: 1, c: -1 },
   { r: -1, c: -1 },
-]
+] as const
 
-export const Messages = {
-  NotAllShipsOnField: 'Put all ships on the field!',
-  GameHasStarted: 'The game has started! Good luck!',
-  GameIsOver: 'The game is over! Thanks for playing.',
-  TwoPlayersInRoom: 'Your opponent has joined.',
-  NoTwoPlayersInRoom: 'You don not have an opponent!',
-  PlayerPlaying: 'Your opponent has started playing.',
-  PlayerIsNotReady: 'Your opponent is not ready.',
-  PlayerWon: 'Congratulations! You have won!',
-  NotYourMove: 'It is not your move now.',
-  YouHitOpponent: 'Nice! You have hit opponent!',
+export function getDefaultGrid(): number[][] {
+  return Utils.createMatrix(Config.gridPositionsSize, Config.gridPositionsSize)
 }

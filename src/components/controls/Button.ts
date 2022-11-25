@@ -2,9 +2,9 @@ import Element from '../Element'
 import GameController from '@/entities/GameController'
 import { ButtonNode } from '@/models'
 import { GameState } from '@/models/enums'
-import { IObserver, ISubject } from '@/models/types'
+import { IButton, ISubject } from '@/models/types'
 
-export default class Button extends Element<HTMLButtonElement> implements IObserver {
+export default class Button extends Element<HTMLButtonElement> implements IButton {
   constructor({ id, classList, text, startIcon }: ButtonNode) {
     super('button')
     this.init({ id, classList, text, startIcon })

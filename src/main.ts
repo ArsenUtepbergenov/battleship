@@ -7,7 +7,7 @@ import './styles/base.css'
 
 function main() {
   const layout = new Layout()
-  const game = new Battleship()
+  const game = Battleship.getInstance()
   const connection = new Connection()
 
   connection.connect(update)

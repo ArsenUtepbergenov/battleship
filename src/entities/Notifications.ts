@@ -1,5 +1,5 @@
-import { Messages, NotificationNode } from '@/models'
-import { ColorType } from '@/models/enums'
+import { NotificationNode } from '@/models'
+import { ColorType, Messages } from '@/models/enums'
 import Notification from '@/components/notifications/Notification'
 
 export default class Notifications {
@@ -76,8 +76,8 @@ const notifications = {
       text: Messages.YouHitOpponent,
       type: ColorType.SUCCESS,
     }),
-}
+} as const
 
-export function notify(message: string) {
-  notifications[message as keyof typeof notifications]()
+export function notify(message: keyof typeof notifications) {
+  notifications[message]()
 }

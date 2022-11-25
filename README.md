@@ -1,6 +1,12 @@
 # The Battleship game
 
-Implementation using typescript and socket.io
+Implementation using typescript and socket.io.
+
+Design patterns are used:
+
+- Observer
+- Singleton
+- Facade
 
 ## Server dependencies:
 

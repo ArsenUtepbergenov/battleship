@@ -1,3 +1,6 @@
+import Canvas from '@/components/Canvas'
+import { MouseEventHandler } from '.'
+
 export interface IObserver {
   update(subject: ISubject): void
 }
@@ -33,4 +36,16 @@ export interface IFillRect extends IRect {
 export interface IStrokeCross extends IPoint {
   offset: number
   color?: string
+}
+
+export interface IButton extends IObserver {
+  click: MouseEventHandler
+  appendTo(parentNode: string): void
+}
+
+export abstract class IField implements IObserver {
+  abstract readonly canvas: Canvas
+  abstract update(subject: ISubject): void
+  abstract setHandlers(): void
+  abstract unsetHandlers(): void
 }

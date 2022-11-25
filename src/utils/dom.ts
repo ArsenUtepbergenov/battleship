@@ -1,6 +1,6 @@
 import { Node } from '@/models'
 
-export default class Dom {
+export default abstract class Dom {
   public static create(tagName: string, { id, classList = [] }: Node): HTMLElement {
     const element = document.createElement(tagName)
     id && element.setAttribute('id', id)

@@ -6,35 +6,37 @@ import BackgroundGrid from './BackgroundGrid'
 import GameController from '@/entities/GameController'
 import { Ship } from '@/entities/Ship'
 import { GameState } from '@/models/enums'
-import { IObserver, IPoint, ISubject } from '@/models/types'
-import { Directions, FieldParams, FieldRect } from '@/models'
+import { IField, IPoint, ISubject } from '@/models/types'
+import { Directions, FieldParams, FieldRect, getDefaultGrid } from '@/models'
 import { Config } from '@/config'
 import gameService from '@/services/game-service'
 import socketService from '@/services/socket-service'
+import Renderer from './Renderer'
 
-export default class Field implements IObserver {
-  private instance = new Canvas(FieldParams)
-  private drawer = new Drawer(this.instance.ctx)
+export default class Field implements IField {
+  readonly canvas = new Canvas(FieldParams)
+  private drawer = new Drawer(this.canvas.ctx)
+  private renderer = new Renderer(this.drawer)
   private backgroundGrid = new BackgroundGrid('field')
   private ships: Ship[] = []
   private shipsStartPositions: Map<string, Point> = new Map()
   private currentShip: Ship | null = null
   private offset = new Point()
-  private grid = Utils.getDefaultGrid()
+  private grid = getDefaultGrid()
   private shipsOnField: Ship[] = []
   private areAllShipsOnField = false
   private numberLiveShipCells = 0
 
   constructor() {
     this.backgroundGrid.draw()
-    this.instance.appendTo('field')
+    this.canvas.appendTo('field')
   }
 
   private getCoordinates(ship: Ship): IPoint {
     if (Math.random() < 0.5) ship.toggleOrientation()
     let maxX = 9
     let maxY = 9
-    const offset = 10 - ship.size
+    const offset = Config.cells - ship.size
 
     ship.isHorizontal ? (maxX = offset) : (maxY = offset)
     const iX = Utils.randomIntByInterval(0, maxX)
@@ -54,7 +56,7 @@ export default class Field implements IObserver {
 
       const { x: iX, y: iY } = this.getCoordinates(ship)
 
-      if (!this.occupyShip(ship, iX, iY)) continue
+      if (!this.occupyCellsByShip(ship, iX, iY)) continue
 
       if (!this.shipsStartPositions.has(ship.id))
         this.shipsStartPositions.set(ship.id, new Point(ship.x, ship.y))
@@ -64,10 +66,10 @@ export default class Field implements IObserver {
           y = iY
         ship.isHorizontal ? (x += i) : (y += i)
 
-        this.occupyAroundShip(y, x)
+        this.occupyCellsAroundShip({ x, y })
       }
 
-      this.setPositionOfShip(ship, iX * Config.cellSize + 2, iY * Config.cellSize + 2)
+      this.setPositionOfShip(ship, { x: iX * Config.cellSize + 2, y: iY * Config.cellSize + 2 })
       this.shipsOnField.push(ship)
       i--
     }
@@ -77,7 +79,6 @@ export default class Field implements IObserver {
 
   public update(subject: ISubject): void {
     const isController = subject instanceof GameController
-
     if (!isController) return
 
     switch (subject.state) {
@@ -95,7 +96,6 @@ export default class Field implements IObserver {
 
   public freeze(): void {
     if (!this.isReady) return
-
     this.numberLiveShipCells = Config.numberShipCells
     this.unsetHandlers()
   }
@@ -111,7 +111,7 @@ export default class Field implements IObserver {
 
   public reset(): void {
     this.resetCurrentShip()
-    this.grid = Utils.getDefaultGrid()
+    this.grid = getDefaultGrid()
     this.shipsOnField.forEach(ship => this.moveToStartPosition(ship))
     this.shipsOnField = []
     this.shipsStartPositions.clear()
@@ -127,17 +127,17 @@ export default class Field implements IObserver {
   }
 
   public undo(): void {
-    if (this.shipsOnField.length) {
-      const lastShip = this.shipsOnField.pop()
-      if (!lastShip) return
+    if (!this.shipsOnField?.length) return
 
-      this.resetCurrentShip()
-      this.removeShipFromField(lastShip)
-      this.moveToStartPosition(lastShip)
-      this.shipsStartPositions.delete(lastShip.id)
-      this.areAllShipsOnField = false
-      this.offset = new Point()
-    }
+    const lastShip = this.shipsOnField.pop()
+    if (!lastShip) return
+
+    this.resetCurrentShip()
+    this.removeShipFromField(lastShip)
+    this.moveToStartPosition(lastShip)
+    this.shipsStartPositions.delete(lastShip.id)
+    this.areAllShipsOnField = false
+    this.offset = new Point()
   }
 
   public shoot({ x, y }: IPoint): void {
@@ -146,36 +146,34 @@ export default class Field implements IObserver {
 
     if (this.grid[y][x] === 1) {
       this.grid[y][x] = 2
-      this.drawHit({ x, y })
+      this.renderer.drawHit({ x, y })
       isHit = true
       this.numberLiveShipCells--
     } else {
       this.grid[y][x] = -2
-      this.drawMiss({ x, y })
+      this.renderer.drawMiss({ x, y })
     }
 
     gameService.hit(socketService.socket, isHit)
     if (this.numberLiveShipCells <= 0) gameService.stopGame(socketService.socket)
   }
 
-  private drawHit({ x, y }: IPoint): void {
-    this.drawer.drawCross({
-      x: x * Config.cellSize + Config.halfCellSize,
-      y: y * Config.cellSize + Config.halfCellSize,
-      offset: Config.cellSize / 3,
-      color: Config.failShotColor,
-    })
+  public setHandlers(): void {
+    this.setMouseMove()
+    this.setMouseOut()
+    this.setClick()
+    this.setContextMenu()
   }
 
-  private drawMiss({ x, y }: IPoint): void {
-    this.drawer.fillCircle({
-      position: {
-        x: x * Config.cellSize + Config.halfCellSize,
-        y: y * Config.cellSize + Config.halfCellSize,
-      },
-      radius: 4,
-      color: Config.missedShotColor,
-    })
+  public unsetHandlers(): void {
+    this.canvas.mouseMove = null
+    this.canvas.mouseOut = null
+    this.canvas.click = null
+    this.canvas.contextMenu = null
+  }
+
+  private setCursor(cursor?: string): void {
+    this.canvas.setCursor(cursor)
   }
 
   private removeShipFromField(ship: Ship): void {
@@ -188,7 +186,7 @@ export default class Field implements IObserver {
       ship.isHorizontal ? (x += i) : (y += i)
 
       this.grid[y][x] = 0
-      if (!this.occupyAroundShip(y, x, -1, 0)) return
+      if (!this.occupyCellsAroundShip({ x, y }, -1, 0)) return
     }
 
     this.shipsOnField.forEach(ship => {
@@ -200,23 +198,9 @@ export default class Field implements IObserver {
           y = iY
         ship.isHorizontal ? (x += i) : (y += i)
 
-        if (!this.occupyAroundShip(y, x)) return
+        if (!this.occupyCellsAroundShip({ x, y })) return
       }
     })
-  }
-
-  private setHandlers(): void {
-    this.setMouseMove()
-    this.setMouseOut()
-    this.setClick()
-    this.setContextMenu()
-  }
-
-  private unsetHandlers(): void {
-    this.instance.mouseMove = null
-    this.instance.mouseOut = null
-    this.instance.click = null
-    this.instance.contextMenu = null
   }
 
   private isOnField(ship: Ship): boolean {
@@ -226,30 +210,31 @@ export default class Field implements IObserver {
   private showPointerCursorOverShip(position: IPoint): void {
     for (const ship of this.ships) {
       if (Utils.checkCollisionPointToRect(position, ship) && !this.isOnField(ship)) {
-        this.instance.setCursor('pointer')
+        this.setCursor('pointer')
         break
       } else {
-        this.instance.setCursor()
+        this.setCursor()
       }
     }
   }
 
   private setMouseMove(): void {
-    this.instance.mouseMove = event => {
+    this.canvas.mouseMove = event => {
       this.showPointerCursorOverShip(Utils.getMouseCoordinates(event))
 
       if (!this.currentShip) return
 
-      const x = event.clientX - this.offset.x
-      const y = event.clientY - this.offset.y
-      this.currentShip.setPosition(x, y)
-      this.instance.setCursor('grab')
+      this.currentShip.setPosition({
+        x: event.clientX - this.offset.x,
+        y: event.clientY - this.offset.y,
+      })
+      this.setCursor('grab')
       this.redrawShips()
     }
   }
 
   private setMouseOut(): void {
-    this.instance.mouseOut = () => {
+    this.canvas.mouseOut = () => {
       if (!this.currentShip) return
 
       this.moveToStartPosition(this.currentShip)
@@ -258,7 +243,7 @@ export default class Field implements IObserver {
   }
 
   private setClick(): void {
-    this.instance.click = event => {
+    this.canvas.click = event => {
       Utils.removeDefaultAction(event)
 
       const position = Utils.getMouseCoordinates(event)
@@ -269,7 +254,7 @@ export default class Field implements IObserver {
   }
 
   private setContextMenu(): void {
-    this.instance.contextMenu = event => {
+    this.canvas.contextMenu = event => {
       Utils.removeDefaultAction(event)
       if (!this.currentShip) return
 
@@ -319,7 +304,7 @@ export default class Field implements IObserver {
     return true
   }
 
-  private occupyShip(ship: Ship, iX: number, iY: number): boolean {
+  private occupyCellsByShip(ship: Ship, iX: number, iY: number): boolean {
     const isH = ship.isHorizontal
 
     if (isH) {
@@ -343,22 +328,22 @@ export default class Field implements IObserver {
     const iX = Utils.div(ship.x, size)
     const iY = Utils.div(ship.y, size)
 
-    if (!this.occupyShip(ship, iX, iY)) return
+    if (!this.occupyCellsByShip(ship, iX, iY)) return
 
     for (let i = 0; i < ship.size; i++) {
       let x = iX,
         y = iY
       ship.isHorizontal ? (x += i) : (y += i)
 
-      if (!this.occupyAroundShip(y, x)) return
+      if (!this.occupyCellsAroundShip({ x, y })) return
     }
 
-    this.setPositionOfShip(ship, iX * size + 2, iY * size + 2)
+    this.setPositionOfShip(ship, { x: iX * size + 2, y: iY * size + 2 })
     this.shipsOnField.push(ship)
     this.areAllShipsOnField = this.shipsOnField.length === Config.numberShips
   }
 
-  private occupyAroundShip(y: number, x: number, from: number = 0, to: number = -1): boolean {
+  private occupyCellsAroundShip({ x, y }: IPoint, from: number = 0, to: number = -1): boolean {
     try {
       for (const { c, r } of Directions) {
         const dx = x + c
@@ -378,38 +363,35 @@ export default class Field implements IObserver {
     }
   }
 
-  private setPositionOfShip(ship: Ship, x: number, y: number): void {
-    ship.setPosition(x, y)
+  private setPositionOfShip(ship: Ship, { x, y }: IPoint): void {
+    ship.setPosition({ x, y })
     this.redrawShips()
     this.resetCurrentShip()
   }
 
   private moveToStartPosition(ship: Ship): void {
-    if (ship.id) {
-      const currentShipStartPosition = this.shipsStartPositions.get(ship.id)
+    if (!ship.id) return
 
-      if (!currentShipStartPosition) return
+    const p = this.shipsStartPositions.get(ship.id)
+    if (!p) return
 
-      const { x, y } = currentShipStartPosition
+    if (!ship.isHorizontal) ship.toggleOrientation()
 
-      if (!ship.isHorizontal) ship.toggleOrientation()
-
-      ship.setPosition(x, y)
-      this.redrawShips()
-    }
+    ship.setPosition({ x: p.x, y: p.y })
+    this.redrawShips()
   }
 
   private resetCurrentShip(): void {
     this.currentShip = null
-    this.instance.setCursor()
+    this.setCursor()
   }
 
   private redrawShips(): void {
-    this.instance.clear()
+    this.canvas.clear()
     this.drawShips()
   }
 
   private drawShips(): void {
-    this.ships.forEach(s => s.draw(this.instance.ctx))
+    this.ships.forEach(s => s.draw(this.canvas.ctx))
   }
 }

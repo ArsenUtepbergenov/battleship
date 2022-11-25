@@ -3,6 +3,7 @@ import {
   MessageBody,
   OnMessage,
   SocketController,
+  SocketId,
   SocketIO,
 } from 'socket-controllers'
 import { Server, Socket } from 'socket.io'
@@ -23,10 +24,11 @@ export class Game {
     @SocketIO() io: Server,
     @ConnectedSocket() socket: Socket,
     @MessageBody() isHit: boolean,
+    @SocketId() id: string,
   ) {
     const room = this.getSocketGameRoom(socket)
 
-    if (!isHit) this.movingPlayerId = socket.id
+    if (!isHit) this.movingPlayerId = id
 
     io.in(room).emit('on_player_move_id', this.movingPlayerId)
     socket.to(room).emit('on_hit', isHit)

@@ -1,7 +1,7 @@
 import { Config, TypeShips } from '@/config'
 import { ShipParams } from '@/models'
 import { Orientation } from '@/models/enums'
-import { IRect } from '@/models/types'
+import { IPoint, IRect } from '@/models/types'
 
 function createShip({ x, y, type, id }: ShipParams): Ship {
   return new Ship({ x, y, size: type, id })
@@ -37,7 +37,8 @@ export class Ship implements IRect {
   public h: number
   public size: number
   public orientation = Orientation.Horizontal
-  private _id: string = ''
+  private identifier: string = ''
+  private healthPoints: number = 0
 
   constructor({ x = 0, y = 0, size = 1, id = '' }) {
     this.x = x
@@ -45,7 +46,8 @@ export class Ship implements IRect {
     this.size = size
     this.w = Config.shipSize * this.size - 4
     this.h = Config.shipSize - 4
-    this._id = id
+    this.identifier = id
+    this.healthPoints = this.size
   }
 
   public draw(ctx: CanvasRenderingContext2D): void {
@@ -62,13 +64,25 @@ export class Ship implements IRect {
     ;[this.w, this.h] = [this.h, this.w]
   }
 
-  public setPosition(x: number, y: number): void {
+  public setPosition({ x, y }: IPoint): void {
     this.x = x
     this.y = y
   }
 
+  public get isLife(): boolean {
+    return this.hp > 0
+  }
+
+  public set decreaseHp(value: number) {
+    if (this.isLife) this.healthPoints -= value
+  }
+
+  public get hp(): number {
+    return this.healthPoints
+  }
+
   public get id(): string {
-    return this._id
+    return this.identifier
   }
 
   public get isHorizontal(): boolean {
