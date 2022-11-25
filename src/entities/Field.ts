@@ -172,6 +172,10 @@ export default class Field implements IField {
     this.canvas.contextMenu = null
   }
 
+  private setCursor(cursor?: string): void {
+    this.canvas.setCursor(cursor)
+  }
+
   private removeShipFromField(ship: Ship): void {
     const iX = Utils.div(ship.x, Config.cellSize)
     const iY = Utils.div(ship.y, Config.cellSize)
@@ -206,10 +210,10 @@ export default class Field implements IField {
   private showPointerCursorOverShip(position: IPoint): void {
     for (const ship of this.ships) {
       if (Utils.checkCollisionPointToRect(position, ship) && !this.isOnField(ship)) {
-        this.canvas.setCursor('pointer')
+        this.setCursor('pointer')
         break
       } else {
-        this.canvas.setCursor()
+        this.setCursor()
       }
     }
   }
@@ -220,10 +224,11 @@ export default class Field implements IField {
 
       if (!this.currentShip) return
 
-      const x = event.clientX - this.offset.x
-      const y = event.clientY - this.offset.y
-      this.currentShip.setPosition(x, y)
-      this.canvas.setCursor('grab')
+      this.currentShip.setPosition({
+        x: event.clientX - this.offset.x,
+        y: event.clientY - this.offset.y,
+      })
+      this.setCursor('grab')
       this.redrawShips()
     }
   }
@@ -359,7 +364,7 @@ export default class Field implements IField {
   }
 
   private setPositionOfShip(ship: Ship, { x, y }: IPoint): void {
-    ship.setPosition(x, y)
+    ship.setPosition({ x, y })
     this.redrawShips()
     this.resetCurrentShip()
   }
@@ -368,18 +373,17 @@ export default class Field implements IField {
     if (!ship.id) return
 
     const p = this.shipsStartPositions.get(ship.id)
-
     if (!p) return
 
     if (!ship.isHorizontal) ship.toggleOrientation()
 
-    ship.setPosition(p.x, p.y)
+    ship.setPosition({ x: p.x, y: p.y })
     this.redrawShips()
   }
 
   private resetCurrentShip(): void {
     this.currentShip = null
-    this.canvas.setCursor()
+    this.setCursor()
   }
 
   private redrawShips(): void {

@@ -1,7 +1,7 @@
 import { Config, TypeShips } from '@/config'
 import { ShipParams } from '@/models'
 import { Orientation } from '@/models/enums'
-import { IRect } from '@/models/types'
+import { IPoint, IRect } from '@/models/types'
 
 function createShip({ x, y, type, id }: ShipParams): Ship {
   return new Ship({ x, y, size: type, id })
@@ -64,7 +64,7 @@ export class Ship implements IRect {
     ;[this.w, this.h] = [this.h, this.w]
   }
 
-  public setPosition(x: number, y: number): void {
+  public setPosition({ x, y }: IPoint): void {
     this.x = x
     this.y = y
   }
